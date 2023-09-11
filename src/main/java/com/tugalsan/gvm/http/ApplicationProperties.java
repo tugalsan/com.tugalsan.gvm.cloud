@@ -20,14 +20,20 @@ public class ApplicationProperties {
         var propsExists = TS_FileUtils.isExistFile(propsFile);
         var props = propsExists ? TS_FilePropertiesUtils.read(propsFile) : new Properties();
         ip = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_ip", "localhost");
+        d.ci("construtor", "ip", ip);
         var redirectToSSLStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_sslRedirect", "true");
+        d.ci("construtor", "redirectToSSLStr", redirectToSSLStr);
         redirectToSSL = TGS_UnSafe.call((() -> Boolean.valueOf(redirectToSSLStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for sslRedirectStr: Cannot convert String to Boolean: " + redirectToSSLStr)));
         var sslPortStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_sslPort", "8081");
+        d.ci("construtor", "sslPortStr", sslPortStr);
         sslPort = TGS_UnSafe.call((() -> Integer.valueOf(sslPortStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for sslPortStr: Cannot convert String to Integer: " + sslPortStr)));
-        var sslPathStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_sslPath", "D:\\xampp_data\\SSL\\tomcat.p12");
+        var sslPathStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_sslPath", "D:/xampp_data/SSL/tomcat.p12");
+        d.ci("construtor", "sslPathStr", sslPathStr);
         sslPath = TGS_UnSafe.call((() -> Path.of(sslPathStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for sslPathStr: Cannot convert String to Path: " + sslPathStr)));
         sslPass = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_sslPass", "MyPass");
-        var pathFileServerStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_pathFileServer", "D:\\file");
+        d.ci("construtor", "sslPass", sslPass);
+        var pathFileServerStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_pathFileServer", "D:/file");
+        d.ci("construtor", "pathFileServerStr", pathFileServerStr);
         pathFileServer = TGS_UnSafe.call((() -> Path.of(pathFileServerStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for pathFileServerStr: Cannot convert String to Path: " + pathFileServerStr)));
         if (!propsExists) {
             TS_FilePropertiesUtils.write(props, propsFile);
