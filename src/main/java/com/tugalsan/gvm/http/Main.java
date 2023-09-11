@@ -46,7 +46,7 @@ public class Main {
         var customTextHandler = TS_SHttpHandlerText.of("/", allow, httpExchange -> {
             var uri = TS_SHttpUtils.getURI(httpExchange).orElse(null);
             if (uri == null) {
-                d.ce("main", "ERROR url base null");
+                d.ce("main", "ERROR sniff url from httpExchange is null");
                 TS_SHttpUtils.sendError404(httpExchange);
                 return null;
             }
