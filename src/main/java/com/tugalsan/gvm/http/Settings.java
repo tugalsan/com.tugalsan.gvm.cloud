@@ -32,9 +32,11 @@ public class Settings {
         sslPath = TGS_UnSafe.call((() -> Path.of(sslPathStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for sslPathStr: Cannot convert String to Path: " + sslPathStr)));
         sslPass = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_sslPass", "MyPass");
         d.ci("construtor", "sslPass", sslPass);
-        var pathFileServerStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_pathFileServer", "D:/file");
-        d.ci("construtor", "pathFileServerStr", pathFileServerStr);
-        fileHandlerRoot = TGS_UnSafe.call((() -> Path.of(pathFileServerStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for pathFileServerStr: Cannot convert String to Path: " + pathFileServerStr)));
+        fileHandlerServletName = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_fileHandlerServletName", "/file/");
+        d.ci("construtor", "fileHandlerServletName", fileHandlerServletName);
+        var fileHandlerRootStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_fileHandlerRoot", "D:/file");
+        d.ci("construtor", "fileHandlerRoot", fileHandlerRootStr);
+        fileHandlerRoot = TGS_UnSafe.call((() -> Path.of(fileHandlerRootStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for fileHandlerRootStr: Cannot convert String to Path: " + fileHandlerRootStr)));
         if (!propsExists) {
             TS_FilePropertiesUtils.write(props, propsFile);
         }
@@ -42,7 +44,7 @@ public class Settings {
     final public boolean redirectToSSL;
     final public int sslPort;
     final public Path sslPath, fileHandlerRoot;
-    final public String ip, sslPass;
+    final public String ip, sslPass, fileHandlerServletName;
 
     public static Settings of(Path propsFile) {
         return new Settings(propsFile);
