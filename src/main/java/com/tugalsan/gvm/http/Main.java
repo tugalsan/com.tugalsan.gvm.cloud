@@ -3,6 +3,7 @@ package com.tugalsan.gvm.http;
 import com.tugalsan.api.file.client.*;
 import com.tugalsan.api.log.server.*;
 import com.tugalsan.api.servlet.http.server.*;
+import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.tuple.client.*;
 import com.tugalsan.api.validator.client.*;
 
@@ -24,11 +25,11 @@ public class Main {
             return true;
         };
         var customTextHandler = TS_SHttpHandlerText.of("/", allow, request -> {
-            return TGS_Tuple2.of(TGS_FileTypes.htm_utf8,
-                    "<html><head><script>location.reload();</script></head><body>"
-                    + request.url
-                    + "<body></html>"
-            );
+            return TGS_Tuple2.of(TGS_FileTypes.htm_utf8, TGS_StringUtils.concat(
+                    "<html><head><script>location.reload();</script></head><body>",
+                    request.url.toString(),
+                    "<body></html>"
+            ));
         });
         TS_SHttpServer.of(
                 TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort),
