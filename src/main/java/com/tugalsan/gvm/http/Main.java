@@ -24,7 +24,7 @@ public class Main {
             }
             return true;
         };
-        var customTextHandler = TS_SHttpHandlerString.of("/", allow, request -> {
+        var customHandler = TS_SHttpHandlerString.of("/", allow, request -> {
             return TGS_Tuple2.of(TGS_FileTypes.htm_utf8, TGS_StringUtils.concat(
                     "<html><head><script>location.reload();</script></head><body>",
                     request.url.toString(),
@@ -35,7 +35,7 @@ public class Main {
                 TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort),
                 TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL),
                 TS_SHttpConfigHandlerFile.of(settings.fileHandlerServletName, allow, settings.fileHandlerRoot),
-                customTextHandler
+                customHandler
         );
     }
 
