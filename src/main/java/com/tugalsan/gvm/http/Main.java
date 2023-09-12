@@ -34,7 +34,7 @@ public class Main {
                     + "<body></html>"
             );
         });
-        TS_SHttpServer.startHttpsServlet(
+        TS_SHttpServer.of(
                 TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort),
                 TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL),
                 allow, settings.pathFileServer, customTextHandler
