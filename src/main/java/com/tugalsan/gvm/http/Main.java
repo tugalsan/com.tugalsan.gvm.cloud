@@ -26,7 +26,12 @@ public class Main {
         var customTextHandler = TS_SHttpHandlerText.of("/", allow, httpExchange -> {
             var uri = TS_SHttpUtils.getURI(httpExchange).orElse(null);
             if (uri == null) {
-                d.ce("main", "ERROR sniff url from httpExchange is null");
+                d.ce("main", "ERROR sniff url from httpExchange is null ⚠");
+                TS_SHttpUtils.sendError404(httpExchange);
+                return null;
+            }
+            if (!TS_SHttpUtils.isLocal(httpExchange)) {
+                d.ce("main", "ERROR i am grumpy, and will work only localhost 😠");
                 TS_SHttpUtils.sendError404(httpExchange);
                 return null;
             }
