@@ -9,11 +9,14 @@ import com.tugalsan.api.os.server.TS_OsPlatformUtils;
 import com.tugalsan.api.os.server.TS_OsProcess;
 import com.tugalsan.api.servlet.http.server.*;
 import com.tugalsan.api.string.client.*;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsyncAwait;
 import com.tugalsan.api.tuple.client.*;
 import com.tugalsan.api.url.client.TGS_Url;
 import com.tugalsan.api.url.client.TGS_UrlUtils;
 import com.tugalsan.api.validator.client.*;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.List;
 
 public class Main {
@@ -25,6 +28,8 @@ public class Main {
     //cd D:\git\gvm\com.tugalsan.gvm.cloud
     //java --enable-preview --add-modules jdk.incubator.vector -jar target/com.tugalsan.gvm.cloud-1.0-SNAPSHOT-jar-with-dependencies.jar    
     public static void main(String[] args) {
+        var killer = TS_ThreadSyncTrigger.of();
+        var maxDuration = Duration.ofMinutes(10);
         var win = TS_OsPlatformUtils.isWindows();
         var settings = Settings.of(Settings.pathDefault());
         TGS_ValidatorType1<TS_SHttpHandlerRequest> allow = request -> {
@@ -58,8 +63,13 @@ public class Main {
                 request.sendError404("ERROR: File not found", filePath);
                 return null;
             }
-            var process = TS_OsProcess.of(List.of(filePath.toString(), request.url.toString()));
-            var out = process.exitValueOk() ? process.output : process.exception.toString();
+            var result = TS_ThreadAsyncAwait.callSingle(killer, maxDuration, kt -> {
+                var process = TS_OsProcess.of(List.of(filePath.toString(), request.url.toString()));
+                return process.exitValueOk() ? process.output : process.exception.toString();
+            });
+            var out = result.hasError()
+                    ? ("txt " + result.exceptionIfFailed.get())
+                    : result.resultIfSuccessful.get();
             var type = out.substring(0, 3);
             return TGS_Tuple2.of(TGS_FileTypes.findByContenTypePrefix(type), out);
         });
