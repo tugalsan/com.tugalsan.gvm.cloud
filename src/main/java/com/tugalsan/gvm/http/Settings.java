@@ -8,15 +8,15 @@ import com.tugalsan.api.unsafe.client.TGS_UnSafe;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class ApplicationProperties {
+public class Settings {
 
-    final private static TS_Log d = TS_Log.of(true, ApplicationProperties.class);
+    final private static TS_Log d = TS_Log.of(true, Settings.class);
 
     public static Path pathDefault() {
-        return TS_PathUtils.getPathCurrent_nio(ApplicationProperties.class.getName() + ".properties");
+        return TS_PathUtils.getPathCurrent_nio(Settings.class.getName() + ".properties");
     }
 
-    private ApplicationProperties(Path propsFile) {
+    private Settings(Path propsFile) {
         var propsExists = TS_FileUtils.isExistFile(propsFile);
         var props = propsExists ? TS_FilePropertiesUtils.read(propsFile) : new Properties();
         ip = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_ip", "localhost");
@@ -44,8 +44,8 @@ public class ApplicationProperties {
     final public Path sslPath, pathFileServer;
     final public String ip, sslPass;
 
-    public static ApplicationProperties of(Path propsFile) {
-        return new ApplicationProperties(propsFile);
+    public static Settings of(Path propsFile) {
+        return new Settings(propsFile);
     }
 
 }

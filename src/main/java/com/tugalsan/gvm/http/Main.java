@@ -21,7 +21,7 @@ public class Main {
     //cd D:\git\gvm\com.tugalsan.gvm.http
     //java --enable-preview --add-modules jdk.incubator.vector -jar target/com.tugalsan.gvm.http-1.0-SNAPSHOT-jar-with-dependencies.jar    
     public static void main(String[] args) {
-        var props = ApplicationProperties.of(ApplicationProperties.pathDefault());
+        var props = Settings.of(Settings.pathDefault());
         TGS_ValidatorType1<TGS_UrlParser> allow = parser -> true;
         var customTextHandler = TS_SHttpHandlerText.of("/", allow, httpExchange -> {
             var uri = TS_SHttpUtils.getURI(httpExchange).orElse(null);
