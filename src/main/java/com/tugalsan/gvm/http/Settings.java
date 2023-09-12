@@ -34,14 +34,14 @@ public class Settings {
         d.ci("construtor", "sslPass", sslPass);
         var pathFileServerStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.http.Main_pathFileServer", "D:/file");
         d.ci("construtor", "pathFileServerStr", pathFileServerStr);
-        pathFileServer = TGS_UnSafe.call((() -> Path.of(pathFileServerStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for pathFileServerStr: Cannot convert String to Path: " + pathFileServerStr)));
+        fileHandlerRoot = TGS_UnSafe.call((() -> Path.of(pathFileServerStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for pathFileServerStr: Cannot convert String to Path: " + pathFileServerStr)));
         if (!propsExists) {
             TS_FilePropertiesUtils.write(props, propsFile);
         }
     }
     final public boolean redirectToSSL;
     final public int sslPort;
-    final public Path sslPath, pathFileServer;
+    final public Path sslPath, fileHandlerRoot;
     final public String ip, sslPass;
 
     public static Settings of(Path propsFile) {
