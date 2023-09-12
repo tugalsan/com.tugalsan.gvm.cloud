@@ -1,1 +1,0 @@
-native-image -march=native --enable-preview -jar target\com.tugalsan.gvm.http-1.0-SNAPSHOT-jar-with-dependencies.jar

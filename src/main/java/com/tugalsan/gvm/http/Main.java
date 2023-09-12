@@ -36,7 +36,7 @@ public class Main {
                 return null;
             }
             var parser = TGS_UrlParser.of(TGS_Url.of(uri.toString()));
-            return TGS_Tuple2.of(TGS_FileTypes.htm_utf8, uri.toString() + "<br>" + parser.toString());
+            return TGS_Tuple2.of(TGS_FileTypes.htm_utf8, "<html><head><script>location.reload();</script></head></html>");
         });
         var network = TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort);
         var ssl = TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL);
