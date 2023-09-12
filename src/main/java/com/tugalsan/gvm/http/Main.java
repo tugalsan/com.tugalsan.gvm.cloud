@@ -21,7 +21,7 @@ public class Main {
     //cd D:\git\gvm\com.tugalsan.gvm.http
     //java --enable-preview --add-modules jdk.incubator.vector -jar target/com.tugalsan.gvm.http-1.0-SNAPSHOT-jar-with-dependencies.jar    
     public static void main(String[] args) {
-        var props = Settings.of(Settings.pathDefault());
+        var settings = Settings.of(Settings.pathDefault());
         TGS_ValidatorType1<TGS_UrlParser> allow = parser -> true;
         var customTextHandler = TS_SHttpHandlerText.of("/", allow, httpExchange -> {
             var uri = TS_SHttpUtils.getURI(httpExchange).orElse(null);
@@ -33,9 +33,9 @@ public class Main {
             var parser = TGS_UrlParser.of(TGS_Url.of(uri.toString()));
             return TGS_Tuple2.of(TGS_FileTypes.htm_utf8, uri.toString() + "<br>" + parser.toString());
         });
-        var network = TS_SHttpConfigNetwork.of(props.ip, props.sslPort);
-        var ssl = TS_SHttpConfigSSL.of(props.sslPath, props.sslPass, props.redirectToSSL);
-        TS_SHttpServer.startHttpsServlet(network, ssl, allow, props.pathFileServer, customTextHandler);
+        var network = TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort);
+        var ssl = TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL);
+        TS_SHttpServer.startHttpsServlet(network, ssl, allow, settings.pathFileServer, customTextHandler);
     }
 
 }
