@@ -24,7 +24,7 @@ public class Main {
             }
             return true;
         };
-        var customTextHandler = TS_SHttpHandlerText.of("/", allow, request -> {
+        var customTextHandler = TS_SHttpHandlerString.of("/", allow, request -> {
             return TGS_Tuple2.of(TGS_FileTypes.htm_utf8, TGS_StringUtils.concat(
                     "<html><head><script>location.reload();</script></head><body>",
                     request.url.toString(),
