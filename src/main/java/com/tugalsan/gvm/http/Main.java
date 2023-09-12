@@ -34,9 +34,13 @@ public class Main {
                     + "<body></html>"
             );
         });
-        var network = TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort);
-        var ssl = TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL);
-        TS_SHttpServer.startHttpsServlet(network, ssl, allow, settings.pathFileServer, customTextHandler);
+        TS_SHttpServer.startHttpsServlet(
+                TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort),
+                TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL),
+                allow,
+                settings.pathFileServer,
+                customTextHandler
+        );
     }
 
 }
