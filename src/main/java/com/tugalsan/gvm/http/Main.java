@@ -18,7 +18,7 @@ public class Main {
         var settings = Settings.of(Settings.pathDefault());
         TGS_ValidatorType1<TS_SHttpHandlerRequest> allow = request -> {
             if (!request.isLocal()) {
-                request.sendError404("ERROR: i am grumpy, and will work only localhost 😠");
+                request.sendError404("ERROR: Will work only localhost 😠");
                 return false;
             }
             return true;
