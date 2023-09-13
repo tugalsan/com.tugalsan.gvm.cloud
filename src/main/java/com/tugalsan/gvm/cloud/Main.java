@@ -46,7 +46,7 @@ public class Main {
     }
 
     @Deprecated //TODO DB OPS
-    private static TGS_Tuple2<TGS_FileTypes, String> createReply(Statement stmt, long rowId, String outExecution) {
+    private static TGS_Tuple2<TGS_FileTypes, String> createReply_usingDB(Statement stmt, long rowId, String outExecution) {
         var outReply = outExecution + " and data of rowId";
         var type = "txt";
         return TGS_Tuple2.of(TGS_FileTypes.findByContenTypePrefix(type), outReply);
@@ -78,7 +78,7 @@ public class Main {
                         if (outExecution == null) {
                             return null;
                         }
-                        return createReply(stmt, rowId, outExecution);
+                        return createReply_usingDB(stmt, rowId, outExecution);
                     }
                 }
             } catch (ClassNotFoundException | SQLException e) {
