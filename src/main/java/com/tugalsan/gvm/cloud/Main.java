@@ -12,8 +12,6 @@ import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsyncAwait;
 import com.tugalsan.api.tuple.client.*;
-import com.tugalsan.api.url.client.TGS_Url;
-import com.tugalsan.api.url.client.TGS_UrlUtils;
 import com.tugalsan.api.validator.client.*;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -40,11 +38,8 @@ public class Main {
             return true;
         };
         var stringHandler = TS_SHttpHandlerString.of("/", allow, request -> {
+            //CHOOSE EXECUTOR FROM SERVLET NAME
             var servletName = request.url.path.fileOrServletName;
-            if (TGS_UrlUtils.isHackedUrl(TGS_Url.of(servletName))) {
-                request.sendError404("ERROR: hack detected", servletName);
-                return null;
-            }
             var fileNameLabel = TGS_Coronator.ofStr()
                     .anoint(val -> TGS_FileUtilsTur.toSafe(servletName))
                     .anointIf(TGS_StringUtils::isNullOrEmpty, val -> "home")
@@ -72,14 +67,22 @@ public class Main {
             if (filePath == null) {
                 return null;
             }
+            //TODO DB OPS
+            var rowId = 0L; //TODO push request.url.toString() to db, fetch row id
+            //EXECUTE OPS
             var result = TS_ThreadAsyncAwait.callSingle(killer, maxDuration, kt -> {
-                var process = TS_OsProcess.of(List.of(filePath.toString(), request.url.toString()));
+                var process = TS_OsProcess.of(List.of(filePath.toString(), String.valueOf(rowId)));
                 return process.exitValueOk() ? process.output : process.exception.toString();
             });
-            var out = result.hasError()
-                    ? ("txt " + result.exceptionIfFailed.get())
-                    : result.resultIfSuccessful.get();
-            var type = out.substring(0, 3);
+            if (result.hasError()) {
+                request.sendError404("ERROR: execute", result.exceptionIfFailed.get());
+                return null;
+            }
+            d.ci("main", "result.resultIfSuccessful", result.resultIfSuccessful.get());
+            //TODO CREATING RETURN OBJ
+            var type = "txt";
+            var out = "todo: value at db:" + result.resultIfSuccessful.get();
+            //RETURN
             return TGS_Tuple2.of(TGS_FileTypes.findByContenTypePrefix(type), out);
         });
         TS_SHttpServer.of(
