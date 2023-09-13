@@ -62,14 +62,14 @@ public class Main {
         var maxExecutionDuration = Duration.ofMinutes(10);
         var isWindows = TS_OsPlatformUtils.isWindows();
         return TS_SHttpHandlerString.of("/", allow, request -> {
+            var pathExecutor = chooseExecutor(isWindows, request);
+            if (pathExecutor == null) {
+                return null;
+            }
             try {
                 Class.forName("org.hsqldb.jdbc.JDBCDriver");
                 try (var con = DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "")) {
                     try (var stmt = con.createStatement()) {
-                        var pathExecutor = chooseExecutor(isWindows, request);
-                        if (pathExecutor == null) {
-                            return null;
-                        }
                         var rowId = pushUrl2DB_and_FetchRowId(request, stmt);
                         if (rowId == null) {
                             return null;
