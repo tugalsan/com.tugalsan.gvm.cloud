@@ -23,7 +23,7 @@ import java.util.List;
 public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
     final private static TS_Log d = TS_Log.of(true, Main.class);
- 
+
     //HOW TO EXECUTE
     //WHEN RUNNING IN NETBEANS, ALL DEPENDENCIES SHOULD HAVE TARGET FOLDER!
     //cd D:\git\gvm\com.tugalsan.gvm.cloud
@@ -122,8 +122,9 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     private static Path chooseExecutor(boolean isWindows, TS_SHttpHandlerRequest request) {
         var servletName = request.url.path.fileOrServletName;
         var fileNameLabel = TGS_Coronator.ofStr()
-                .anoint(val -> TGS_FileUtilsTur.toSafe(servletName))
+                .anoint(val -> servletName)
                 .anointIf(TGS_StringUtils::isNullOrEmpty, val -> "home")
+                .anoint(val -> TGS_FileUtilsTur.toSafe(servletName))
                 .coronate();
         var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
             if (!isWindows) {
