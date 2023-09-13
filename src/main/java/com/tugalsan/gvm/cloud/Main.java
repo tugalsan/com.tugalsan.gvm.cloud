@@ -85,15 +85,19 @@ public class Main {
 
     private static String execute(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, long rowId) {
         var result = TS_ThreadAsyncAwait.callSingle(killer, maxExecutionDuration, kt -> {
-            var process = TS_OsProcess.of(List.of(pathExecutor.toString(), String.valueOf(rowId)));
-            return process.exitValueOk() ? process.output : process.exception.toString();
+            return TS_OsProcess.of(List.of(pathExecutor.toString(), String.valueOf(rowId)));
         });
         if (result.hasError()) {
             request.sendError404("ERROR: execute", result.exceptionIfFailed.get());
             return null;
         }
-        d.ci("main", "result.resultIfSuccessful", result.resultIfSuccessful.get());
-        return result.resultIfSuccessful.get();
+        var process = result.resultIfSuccessful.get();
+        if (!process.exitValueOk()) {
+            request.sendError404("ERROR: execute.process", process.exception.toString());
+            return null;
+        }
+        d.ci("main", "result.resultIfSuccessful", process.output);
+        return process.output;
     }
 
     private static Path chooseExecutor(boolean isWindows, TS_SHttpHandlerRequest request) {
