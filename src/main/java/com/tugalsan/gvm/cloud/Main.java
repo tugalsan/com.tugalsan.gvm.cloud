@@ -40,7 +40,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     private static boolean isAllowed(TS_SHttpHandlerRequest request) {
         d.ci("isAllowed", "hello");
         if (!request.isLocal()) {
-            request.sendError404("ERROR: Will work only localhost 😠");
+            request.sendError404("isAllowed", "ERROR: Will work only localhost 😠");
             return false;
         }
         return true;
@@ -87,7 +87,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                     }
                 }
             } catch (ClassNotFoundException | SQLException e) {
-                request.sendError404("ERROR: failed to load HSQLDB JDBC driver.");
+                request.sendError404("createHandlerExecutor.handle", "ERROR: failed to load HSQLDB JDBC driver.");
                 return null;
             }
         });
@@ -107,7 +107,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             return TS_OsProcess.of(List.of(pathExecutor.toString(), String.valueOf(rowId)));
         });
         if (result.hasError()) {
-            request.sendError404("ERROR: execute", result.exceptionIfFailed.get());
+            request.sendError404("ERROR: execute", result.exceptionIfFailed.get().toString());
             return null;
         }
         var process = result.resultIfSuccessful.get();
@@ -129,7 +129,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             if (!isWindows) {
                 var sh = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".sh");
                 if (!TS_FileUtils.isExistFile(sh)) {
-                    request.sendError404("ERROR: sh file not found", sh);
+                    request.sendError404("ERROR: sh file not found", sh.toString());
                     return null;
                 }
                 return null;
@@ -140,7 +140,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             }
             var exe = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".exe");
             if (!TS_FileUtils.isExistFile(exe)) {
-                request.sendError404("ERROR: bat or exe file not found", bat, exe);
+                request.sendError404("chooseExecutor", "ERROR: bat or exe file not found, " + bat.toString() + ", " + exe.toString());
                 return null;
             }
             return null;
