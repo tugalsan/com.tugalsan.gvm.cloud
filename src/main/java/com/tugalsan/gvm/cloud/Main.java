@@ -26,7 +26,7 @@ public class Main {
     //cd D:\git\gvm\com.tugalsan.gvm.cloud
     //java --enable-preview --add-modules jdk.incubator.vector -jar target/com.tugalsan.gvm.cloud-1.0-SNAPSHOT-jar-with-dependencies.jar    
     public static void main(String[] args) {
-        var killer = TS_ThreadSyncTrigger.of();
+        var killer = TS_ThreadSyncTrigger.of();//not used for now
         var settings = Settings.of(Settings.pathDefault());
         TGS_ValidatorType1<TS_SHttpHandlerRequest> allow = request -> isAllowed(request);
         var handlerExecutor = createHandlerExecutor(killer, allow);//settings may be used here in the future
