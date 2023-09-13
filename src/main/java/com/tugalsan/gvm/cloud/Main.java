@@ -27,34 +27,19 @@ public class Main {
     //java --enable-preview --add-modules jdk.incubator.vector -jar target/com.tugalsan.gvm.cloud-1.0-SNAPSHOT-jar-with-dependencies.jar    
     public static void main(String[] args) {
         var killer = TS_ThreadSyncTrigger.of();
-        var maxExecutionDuration = Duration.ofMinutes(10);
-        var win = TS_OsPlatformUtils.isWindows();
         var settings = Settings.of(Settings.pathDefault());
-        TGS_ValidatorType1<TS_SHttpHandlerRequest> allow = request -> {
-            if (!request.isLocal()) {
-                request.sendError404("ERROR: Will work only localhost 😠");
-                return false;
-            }
-            return true;
-        };
-        var stringHandler = TS_SHttpHandlerString.of("/", allow, request -> {
-            var pathExecutor = chooseExecutor(win, request);
-            if (pathExecutor == null) {
-                return null;
-            }
-            var rowId = pushUrlAndFetchRowId(request);
-            if (rowId == null) {
-                return null;
-            }
-            var outExecution = execute(killer, maxExecutionDuration, request, pathExecutor, rowId);
-            return createReply(rowId, outExecution);
-        });
-        TS_SHttpServer.of(
-                TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort),
-                TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL),
-                TS_SHttpConfigHandlerFile.of(settings.fileHandlerServletName, allow, settings.fileHandlerRoot),
-                stringHandler
-        );
+        TGS_ValidatorType1<TS_SHttpHandlerRequest> allow = request -> isAllowed(request);
+        var handlerExecutor = createHandlerExecutor(killer, allow);//settings may be used here in the future
+        startHttps(settings, allow, handlerExecutor);
+    }
+
+    @Deprecated //TODO ALLOW LOGIC
+    private static boolean isAllowed(TS_SHttpHandlerRequest request) {
+        if (!request.isLocal()) {
+            request.sendError404("ERROR: Will work only localhost 😠");
+            return false;
+        }
+        return true;
     }
 
     @Deprecated //TODO DB OPS
@@ -65,8 +50,37 @@ public class Main {
     }
 
     @Deprecated //TODO DB OPS
-    private static Long pushUrlAndFetchRowId(TS_SHttpHandlerRequest request) {
+    private static Long pushUrl2DB_and_FetchRowId(TS_SHttpHandlerRequest request) {
         return 0L; //TODO push request.url.toString() to db, fetch row id
+    }
+
+    private static TS_SHttpHandlerAbstract createHandlerExecutor(TS_ThreadSyncTrigger killer, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow) {
+        var maxExecutionDuration = Duration.ofMinutes(10);
+        var isWindows = TS_OsPlatformUtils.isWindows();
+        return TS_SHttpHandlerString.of("/", allow, request -> {
+            var pathExecutor = chooseExecutor(isWindows, request);
+            if (pathExecutor == null) {
+                return null;
+            }
+            var rowId = pushUrl2DB_and_FetchRowId(request);
+            if (rowId == null) {
+                return null;
+            }
+            var outExecution = execute(killer, maxExecutionDuration, request, pathExecutor, rowId);
+            if (outExecution == null) {
+                return null;
+            }
+            return createReply(rowId, outExecution);
+        });
+    }
+
+    private static void startHttps(Settings settings, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, TS_SHttpHandlerAbstract... customHandler) {
+        TS_SHttpServer.of(
+                TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort),
+                TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL),
+                TS_SHttpConfigHandlerFile.of(settings.fileHandlerServletName, allow, settings.fileHandlerRoot),
+                customHandler
+        );
     }
 
     private static String execute(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, long rowId) {
@@ -82,14 +96,14 @@ public class Main {
         return result.resultIfSuccessful.get();
     }
 
-    private static Path chooseExecutor(boolean win, TS_SHttpHandlerRequest request) {
+    private static Path chooseExecutor(boolean isWindows, TS_SHttpHandlerRequest request) {
         var servletName = request.url.path.fileOrServletName;
         var fileNameLabel = TGS_Coronator.ofStr()
                 .anoint(val -> TGS_FileUtilsTur.toSafe(servletName))
                 .anointIf(TGS_StringUtils::isNullOrEmpty, val -> "home")
                 .coronate();
         var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
-            if (!win) {
+            if (!isWindows) {
                 var sh = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".sh");
                 if (!TS_FileUtils.isExistFile(sh)) {
                     request.sendError404("ERROR: sh file not found", sh);
