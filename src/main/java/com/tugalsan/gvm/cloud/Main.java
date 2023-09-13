@@ -51,16 +51,25 @@ public class Main {
                     .coronate();
             var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
                 if (!win) {
-                    return TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".sh");
+                    var sh = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".sh");
+                    if (!TS_FileUtils.isExistFile(sh)) {
+                        request.sendError404("ERROR: sh file not found", sh);
+                        return null;
+                    }
+                    return null;
                 }
                 var bat = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".bat");
                 if (TS_FileUtils.isExistFile(bat)) {
                     return bat;
                 }
-                return TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".exe");
+                var exe = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".exe");
+                if (!TS_FileUtils.isExistFile(exe)) {
+                    request.sendError404("ERROR: bat or exe file not found", bat, exe);
+                    return null;
+                }
+                return null;
             });
-            if (!TS_FileUtils.isExistFile(filePath)) {
-                request.sendError404("ERROR: File not found", filePath);
+            if (filePath == null) {
                 return null;
             }
             var result = TS_ThreadAsyncAwait.callSingle(killer, maxDuration, kt -> {
