@@ -124,7 +124,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         var fileNameLabel = TGS_Coronator.ofStr()
                 .anoint(val -> servletName)
                 .anointIf(TGS_StringUtils::isNullOrEmpty, val -> "home")
-                .anoint(val -> TGS_FileUtilsTur.toSafe(servletName))
+                .anoint(val -> TGS_FileUtilsTur.toSafe(val))
                 .coronate();
         var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
             if (!isWindows) {
