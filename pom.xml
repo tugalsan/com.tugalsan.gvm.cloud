@@ -12,11 +12,11 @@
     <url>http://www.tugalsan.com</url>
     
     <dependencies>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>2.7.2</version>
-        </dependency>
+        </dependency>  -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>com.tugalsan.api.servlet.http</artifactId>

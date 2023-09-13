@@ -69,27 +69,28 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             if (pathExecutor == null) {
                 return null;
             }
-            try {
-                Class.forName("org.hsqldb.jdbc.JDBCDriver");
-                try (var con = DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "")) {
-                    try (var stmt = con.createStatement()) {
-                        var rowId = pushUrl2DB_and_FetchRowId(request, stmt);
-                        d.ci("createHandlerExecutor.handle", "rowId", rowId);
-                        if (rowId == null) {
-                            return null;
-                        }
-                        var outExecution = execute(killer, maxExecutionDuration, request, pathExecutor, rowId);
-                        if (outExecution == null) {
-                            return null;
-                        }
-                        d.ci("createHandlerExecutor.handle", "outExecution", outExecution);
-                        return createReply_usingDB(stmt, rowId, outExecution);
-                    }
-                }
-            } catch (ClassNotFoundException | SQLException e) {
-                request.sendError404("createHandlerExecutor.handle", "ERROR: failed to load HSQLDB JDBC driver.");
+//            try {
+//                Class.forName("org.hsqldb.jdbc.JDBCDriver");
+//                try (var con = DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "")) {
+//                    try (var stmt = con.createStatement()) {
+            Statement stmt = null;
+            var rowId = pushUrl2DB_and_FetchRowId(request, stmt);
+            d.ci("createHandlerExecutor.handle", "rowId", rowId);
+            if (rowId == null) {
                 return null;
             }
+            var outExecution = execute(killer, maxExecutionDuration, request, pathExecutor, rowId);
+            if (outExecution == null) {
+                return null;
+            }
+            d.ci("createHandlerExecutor.handle", "outExecution", outExecution);
+            return createReply_usingDB(stmt, rowId, outExecution);
+//                    }
+//                }
+//            } catch (ClassNotFoundException | SQLException e) {
+//                request.sendError404("createHandlerExecutor.handle", "ERROR: failed to load HSQLDB JDBC driver.");
+//                return null;
+//            }
         });
     }
 
