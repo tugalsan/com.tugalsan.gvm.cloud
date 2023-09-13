@@ -14,6 +14,9 @@ import com.tugalsan.api.thread.server.async.TS_ThreadAsyncAwait;
 import com.tugalsan.api.tuple.client.*;
 import com.tugalsan.api.validator.client.*;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.util.List;
 
@@ -44,14 +47,38 @@ public class Main {
 
     @Deprecated //TODO DB OPS
     private static TGS_Tuple2<TGS_FileTypes, String> createReply(long rowId, String outExecution) {
-        var outReply = outExecution + " and data of rowId";
-        var type = "txt";
-        return TGS_Tuple2.of(TGS_FileTypes.findByContenTypePrefix(type), outReply);
+//        try {
+//            Class.forName("org.hsqldb.jdbc.JDBCDriver");
+//            try (var con = DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "")) {
+//                try (var stmt = con.createStatement()) {
+//                    stmt.execute("TODO");
+                    var outReply = outExecution + " and data of rowId";
+                    var type = "txt";
+                    return TGS_Tuple2.of(TGS_FileTypes.findByContenTypePrefix(type), outReply);
+//                }
+//            }
+//        } catch (ClassNotFoundException | SQLException e) {
+//            System.err.println("ERROR: failed to load HSQLDB JDBC driver.");
+//            e.printStackTrace();
+//            return 0L;
+//        }
     }
 
     @Deprecated //TODO DB OPS
     private static Long pushUrl2DB_and_FetchRowId(TS_SHttpHandlerRequest request) {
-        return 0L; //TODO push request.url.toString() to db, fetch row id
+//        try {
+//            Class.forName("org.hsqldb.jdbc.JDBCDriver");
+//            try (var con = DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "")) {
+//                try (var stmt = con.createStatement()) {
+//                    stmt.execute("CREATE TABLE IF NOT EXISTS mytable (`col` VARCHAR(16) NOT NULL)");
+                    return 0L; //TODO push request.url.toString() to db, fetch row id
+//                }
+//            }
+//        } catch (ClassNotFoundException | SQLException e) {
+//            System.err.println("ERROR: failed to load HSQLDB JDBC driver.");
+//            e.printStackTrace();
+//            return 0L;
+//        }
     }
 
     private static TS_SHttpHandlerAbstract createHandlerExecutor(TS_ThreadSyncTrigger killer, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow) {
