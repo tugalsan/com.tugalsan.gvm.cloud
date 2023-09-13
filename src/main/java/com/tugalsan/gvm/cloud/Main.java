@@ -62,7 +62,9 @@ public class Main {
         var maxExecutionDuration = Duration.ofMinutes(10);
         var isWindows = TS_OsPlatformUtils.isWindows();
         return TS_SHttpHandlerString.of("/", allow, request -> {
+            d.ci("createHandlerExecutor.handle", "hello");
             var pathExecutor = chooseExecutor(isWindows, request);
+            d.ci("createHandlerExecutor.handle", "pathExecutor", pathExecutor);
             if (pathExecutor == null) {
                 return null;
             }
@@ -71,6 +73,7 @@ public class Main {
                 try (var con = DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "")) {
                     try (var stmt = con.createStatement()) {
                         var rowId = pushUrl2DB_and_FetchRowId(request, stmt);
+                        d.ci("createHandlerExecutor.handle", "rowId", rowId);
                         if (rowId == null) {
                             return null;
                         }
@@ -78,6 +81,7 @@ public class Main {
                         if (outExecution == null) {
                             return null;
                         }
+                        d.ci("createHandlerExecutor.handle", "outExecution", outExecution);
                         return createReply_usingDB(stmt, rowId, outExecution);
                     }
                 }
