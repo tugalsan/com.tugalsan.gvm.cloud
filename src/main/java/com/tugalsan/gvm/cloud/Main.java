@@ -21,7 +21,6 @@ import java.time.Duration;
 import java.util.List;
 
 public class Main {//extended from com.tugalsan.tst.servlet.http.Main
-    
 
     final private static TS_Log d = TS_Log.of(true, Main.class);
 
@@ -39,6 +38,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
     @Deprecated //TODO ALLOW LOGIC
     private static boolean isAllowed(TS_SHttpHandlerRequest request) {
+        d.ci("isAllowed", "hello");
         if (!request.isLocal()) {
             request.sendError404("ERROR: Will work only localhost 😠");
             return false;
