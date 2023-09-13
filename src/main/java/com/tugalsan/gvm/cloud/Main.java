@@ -20,7 +20,8 @@ import java.sql.Statement;
 import java.time.Duration;
 import java.util.List;
 
-public class Main {
+public class Main {//extended from com.tugalsan.tst.servlet.http.Main
+    
 
     final private static TS_Log d = TS_Log.of(true, Main.class);
 
