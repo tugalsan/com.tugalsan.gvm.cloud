@@ -22,6 +22,16 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
     final private static TS_Log d = TS_Log.of(true, Main.class);
 
+    /*
+        - settings
+            - make isHackedUrl check optional
+        - stringHandler
+            - use a custom return-object rather then TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "...")
+            - add Access-Control-Allow-Origin option
+        - write the memory db functions implementations that can be compiled to graalvm 
+    */
+    
+    
     //HOW TO EXECUTE
     //WHEN RUNNING IN NETBEANS, ALL DEPENDENCIES SHOULD HAVE TARGET FOLDER!
     //cd D:\git\gvm\com.tugalsan.gvm.cloud
