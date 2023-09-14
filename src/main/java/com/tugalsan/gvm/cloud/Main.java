@@ -22,7 +22,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
     final private static TS_Log d = TS_Log.of(true, Main.class);
 
-    /*
+    /*TODO LIST
         - settings
             - make isHackedUrl check optional
             - for sub executor, db implementation may not be needed, like home page,
