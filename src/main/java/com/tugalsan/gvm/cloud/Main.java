@@ -61,9 +61,9 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         var maxExecutionDuration = Duration.ofMinutes(10);
         var isWindows = TS_OsPlatformUtils.isWindows();
         return TS_SHttpHandlerString.of("/", allow, request -> {
-            d.ci("createHandlerExecutor.handle", "hello");
+            d.ci("createHandlerExecutor.of", "hello");
             var pathExecutor = chooseExecutor(isWindows, request);
-            d.ci("createHandlerExecutor.handle", "pathExecutor", pathExecutor);
+            d.ci("createHandlerExecutor.of", "pathExecutor", pathExecutor);
             if (pathExecutor == null) {
                 return null;
             }
@@ -73,7 +73,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 //                    try (var stmt = con.createStatement()) {
             Statement stmt = null;
             var rowId = pushUrl2DB_and_FetchRowId(request, stmt);
-            d.ci("createHandlerExecutor.handle", "rowId", rowId);
+            d.ci("createHandlerExecutor.of", "rowId", rowId);
             if (rowId == null) {
                 return null;
             }
@@ -81,7 +81,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             if (outExecution == null) {
                 return null;
             }
-            d.ci("createHandlerExecutor.handle", "outExecution", outExecution);
+            d.ci("createHandlerExecutor.of", "outExecution", outExecution);
             return createReply_usingDB(stmt, rowId, outExecution);
 //                    }
 //                }
@@ -114,7 +114,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             request.sendError404("ERROR: execute.process", process.exception.toString());
             return null;
         }
-        d.ci("main", "result.resultIfSuccessful", process.output);
+        d.ci("execute", "process.output", process.output);
         return process.output;
     }
 
