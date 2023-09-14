@@ -26,12 +26,13 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         - settings
             - make isHackedUrl check optional
             - for some executors, db implementation may not be needed, like home page,
-                - it can be defined in settings and sb function may be skipped
-                - hence one can write a html file from simple batch file :P
+                - it can be defined in settings and db functions may be skipped
+                - hence one can write an html file from simple batch file :P
         - stringHandler
             - use a custom return-object rather then TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "...")
-            - add Access-Control-Allow-Origin option
-        - write the memory db functions implementations that can be compiled to graalvm 
+                - add Access-Control-Allow-Origin option to it
+        - db functions
+            - write the memory db functions implementations that can be compiled with graalvm 
     */
     
     
