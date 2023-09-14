@@ -25,7 +25,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     /*TODO LIST
         - settings
             - make isHackedUrl check optional
-            - for sub executor, db implementation may not be needed, like home page,
+            - for some executors, db implementation may not be needed, like home page,
                 - it can be defined in settings and sb function may be skipped
                 - hence one can write a html file from simple batch file :P
         - stringHandler
