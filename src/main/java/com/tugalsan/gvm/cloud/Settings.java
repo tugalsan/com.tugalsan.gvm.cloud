@@ -21,7 +21,7 @@ public class Settings {
         var props = propsExists ? TS_FilePropertiesUtils.read(propsFile) : new Properties();
 
         var onHandlerFile_filterUrlsWithHiddenCharsStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_onHandlerFile_filterUrlsWithHiddenChars", "true");
-        d.ci("construtor", "onHandlerString_removeHiddenCharsStr", onHandlerFile_filterUrlsWithHiddenCharsStr);
+        d.ci("construtor", "onHandlerFile_filterUrlsWithHiddenChars", onHandlerFile_filterUrlsWithHiddenCharsStr);
         onHandlerFile_filterUrlsWithHiddenChars = TGS_UnSafe.call((() -> Boolean.valueOf(onHandlerFile_filterUrlsWithHiddenCharsStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for onHandlerFile_filterUrlsWithHiddenCharsStr: Cannot convert String to Boolean: " + onHandlerFile_filterUrlsWithHiddenCharsStr)));
 
         var onHandlerString_removeHiddenCharsStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_onHandlerString_removeHiddenChars", "true");
