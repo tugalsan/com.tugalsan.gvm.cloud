@@ -14,8 +14,6 @@ import com.tugalsan.api.thread.server.async.TS_ThreadAsyncAwait;
 import com.tugalsan.api.tuple.client.*;
 import com.tugalsan.api.validator.client.*;
 import java.nio.file.Path;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.util.List;
@@ -24,9 +22,6 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
     final private static TS_Log d = TS_Log.of(true, Main.class);
 
-    //TODO RE-ENABLE HIDDEN CHAR DETECTION
-    
-    
     //HOW TO EXECUTE
     //WHEN RUNNING IN NETBEANS, ALL DEPENDENCIES SHOULD HAVE TARGET FOLDER!
     //cd D:\git\gvm\com.tugalsan.gvm.cloud
@@ -35,7 +30,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         var killer = TS_ThreadSyncTrigger.of();//not used for now
         var settings = Settings.of(Settings.pathDefault());
         TGS_ValidatorType1<TS_SHttpHandlerRequest> allow = request -> isAllowed(request);
-        var handlerExecutor = createHandlerExecutor(killer, allow);//settings may be used here in the future
+        var handlerExecutor = createHandlerExecutor(killer, allow, settings);
         startHttps(settings, allow, handlerExecutor);
     }
 
@@ -62,7 +57,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         return 0L; //TODO push request.url.toString() to db, fetch row id
     }
 
-    private static TS_SHttpHandlerAbstract createHandlerExecutor(TS_ThreadSyncTrigger killer, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow) {
+    private static TS_SHttpHandlerAbstract createHandlerExecutor(TS_ThreadSyncTrigger killer, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, Settings settings) {
         var maxExecutionDuration = Duration.ofMinutes(10);
         var isWindows = TS_OsPlatformUtils.isWindows();
         return TS_SHttpHandlerString.of("/", allow, request -> {
@@ -94,14 +89,14 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 //                request.sendError404("createHandlerExecutor.handle", "ERROR: failed to load HSQLDB JDBC driver.");
 //                return null;
 //            }
-        });
+        }, settings.onHandlerString_removeHiddenChars);
     }
 
     private static void startHttps(Settings settings, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, TS_SHttpHandlerAbstract... customHandler) {
         TS_SHttpServer.of(
                 TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort),
                 TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL),
-                TS_SHttpConfigHandlerFile.of(settings.fileHandlerServletName, allow, settings.fileHandlerRoot),
+                TS_SHttpConfigHandlerFile.of(settings.fileHandlerServletName, allow, settings.fileHandlerRoot, settings.onHandlerFile_filterUrlsWithHiddenChars),
                 customHandler
         );
     }
@@ -137,7 +132,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                     request.sendError404("ERROR: sh file not found", sh.toString());
                     return null;
                 }
-                return null;
+                return sh;
             }
             var bat = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".bat");
             if (TS_FileUtils.isExistFile(bat)) {
