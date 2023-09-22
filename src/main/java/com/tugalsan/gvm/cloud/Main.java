@@ -10,6 +10,7 @@ import com.tugalsan.api.os.server.TS_OsProcess;
 import com.tugalsan.api.random.client.TGS_RandomUtils;
 import com.tugalsan.api.servlet.http.server.*;
 import com.tugalsan.api.string.client.*;
+import com.tugalsan.api.thread.server.TS_ThreadWait;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsyncAwait;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsyncScheduled;
@@ -26,7 +27,9 @@ import java.util.Objects;
 
 public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
-    final private static TS_Log d = TS_Log.of(true, Main.class);
+    final private static TS_Log d = TS_Log.of(false, Main.class);
+    final private static TS_Log d_thread = TS_Log.of(true, Main.class);
+    final private static TS_Log d_caller = TS_Log.of(true, Main.class);
     final private static Duration maxExecutionDuration = Duration.ofMinutes(10);
 
     //HOW TO EXECUTE
@@ -43,133 +46,144 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         var killer = TS_ThreadSyncTrigger.of();//not used for now
         startRowCleanUp(killer);
         var settings = Settings.of(Settings.pathDefault());
-        var handlerNativeSupplier = createHandlerNativeSupplier(settings);
-        var handlerNativeCaller = createHandlerNativeCaller(killer, settings);
-        startHttps(settings, r -> true, handlerNativeSupplier, handlerNativeCaller);
+        var nativeSupplier = nativeSupplier(settings);
+        var nativeCaller = nativeCaller(killer, settings);
+        startHttps(settings, nativeSupplier, nativeCaller);
         startRowCleanUp(killer);
-        if (d.infoEnable) {
+        if (d_thread.infoEnable) {
             startRowInfo(killer, Duration.ofSeconds(10));
         }
     }
 
     private static void startRowInfo(TS_ThreadSyncTrigger killer, Duration durInfo) {
         TS_ThreadAsyncScheduled.every(killer, true, durInfo, kt -> {
-            d.ci("startRowInfo", "rows.size()", rows.size());
-            rows.forEach(row -> d.ci("startRowInfo", row));
+            d_thread.ci("startRowInfo", "rows.size()", rows.size());
+            rows.forEach(row -> d_thread.ci("startRowInfo", row));
         });
     }
 
     private static void startRowCleanUp(TS_ThreadSyncTrigger killer) {
         TS_ThreadAsyncScheduled.every(killer, true, maxExecutionDuration, kt -> {
             var ago = TGS_Time.ofMinutesAgo((int) maxExecutionDuration.toMinutes());
-            d.ci("startRowCleanUp", "will clean before", ago.toString_dateOnly(), ago.toString_timeOnly_simplified());
-            d.ci("startRowCleanUp", "before", "rows.size()", rows.size());
+            d_thread.ci("startRowCleanUp", "will clean before", ago.toString_dateOnly(), ago.toString_timeOnly_simplified());
+            d_thread.ci("startRowCleanUp", "before", "rows.size()", rows.size());
             rows.removeAll(row -> ago.hasGreater(row.time));
-            d.ci("startRowCleanUp", "after", "rows.size()", rows.size());
+            d_thread.ci("startRowCleanUp", "after", "rows.size()", rows.size());
         });
     }
 
-    private static void startHttps(Settings settings, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, TS_SHttpHandlerAbstract... customHandler) {
+    private static void startHttps(Settings settings, TS_SHttpHandlerAbstract... customHandler) {
         TS_SHttpServer.of(
                 TS_SHttpConfigNetwork.of(settings.ip, settings.sslPort),
                 TS_SHttpConfigSSL.of(settings.sslPath, settings.sslPass, settings.redirectToSSL),
-                TS_SHttpConfigHandlerFile.of(settings.fileHandlerServletName, allow, settings.fileHandlerRoot, settings.onHandlerFile_filterUrlsWithHiddenChars),
+                TS_SHttpConfigHandlerFile.of(settings.fileHandlerServletName, r -> true, settings.fileHandlerRoot, settings.onHandlerFile_filterUrlsWithHiddenChars),
                 customHandler
         );
     }
 
-    private static TS_SHttpHandlerAbstract createHandlerNativeSupplier(Settings settings) {
-        return TS_SHttpHandlerString.of("/" + TGS_LibCloudUtils.SERVLET_NAME_NATIVE_SUPPLY, r -> r.isLocal(), request -> {
+    private static TS_SHttpHandlerAbstract nativeSupplier(Settings settings) {
+        return TS_SHttpHandlerString.of("/" + TGS_LibCloudUtils.SERVLET_NAME_NATIVE_SUPPLY, r -> true, request -> {
+            d_caller.ci("nativeSupplier", "request.url", request.url);
             if (!request.isLocal()) {
                 return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: !request.isLocal() @ " + request.url);
             }
+            d_caller.ci("nativeSupplier", "passed local");
             var pRowHash = request.url.quary.getParameterByName(TGS_LibCloudUtils.SERVLET_PARAM_ROW_HASH);
             if (pRowHash == null) {
                 return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: pRowHash == null @ " + request.url);
             }
-            var row = rows.findFirst(r -> Objects.equals(r.hash, pRowHash));
+            d_caller.ci("nativeSupplier", "pRowHash", pRowHash);
+            var row = rows.findFirst(r -> Objects.equals(r.hash, pRowHash.valueUrlSafe));
             if (row == null) {
                 return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: row == null @ " + request.url);
             }
+            d_caller.ci("nativeSupplier", "SUCCESS", "row.url", row.url);
             return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, row.url);
 
         }, settings.onHandlerString_removeHiddenChars);
     }
 
-    private static TS_SHttpHandlerAbstract createHandlerNativeCaller(TS_ThreadSyncTrigger killer, Settings settings) {
+    private static TS_SHttpHandlerAbstract nativeCaller(TS_ThreadSyncTrigger killer, Settings settings) {
         return TS_SHttpHandlerString.of("/", r -> true, request -> {
             var isWindows = TS_OsPlatformUtils.isWindows();
-            d.ci("createHandlerNativeCaller_doCall", "hello");
-            var pathExecutor = createHandlerNativeCaller_doCall_pathExecutor(isWindows, request);
-            d.ci("createHandlerNativeCaller_doCall", "pathExecutor", pathExecutor);
+            d_caller.ci("nativeCaller", "hello");
+            var pathExecutor = nativeCaller_pick(isWindows, request);
+            d_caller.ci("nativeCaller", "pathExecutor", pathExecutor);
             if (pathExecutor == null) {
+                request.sendError404("nativeCaller", "ERROR: pathExecutor == null");
                 return null;
             }
             var row = Row.of(
                     TGS_RandomUtils.nextString(20, true, true, true, false, null),
                     request.url.toString(), TGS_Time.of()
             );
+            d_caller.ci("nativeCaller", "before.add", "rows.size()", rows.size());
             rows.add(row);
-            var outExecution = createHandlerNativeCaller_doCall_sub(killer, maxExecutionDuration, request, pathExecutor, row.hash);
-            rows.removeFirst(row);
+            d_caller.ci("nativeCaller", "after.add", "rows.size()", rows.size());
+            var outExecution = nativeCaller_call(killer, maxExecutionDuration, request, pathExecutor, row.hash);
+            d_caller.ci("nativeCaller", "before.remove", "rows.size()", rows.size());
+            rows.removeFirst(r -> Objects.equals(r.hash, row.hash));
+            d_caller.ci("nativeCaller", "after.remove", "rows.size()", rows.size());
             if (outExecution == null) {
+                request.sendError404("nativeCaller", "ERROR: outExecution == null");
                 return null;
             }
-            d.ci("createHandlerNativeCaller_doCall", "outExecution", outExecution);
+            d_caller.ci("nativeCaller", "outExecution", outExecution);
             var type = TGS_FileTypes.txt_utf8;
             if (outExecution.startsWith("ERROR") || outExecution.startsWith("ERROR") || outExecution.startsWith("HATA") || outExecution.startsWith("hata")) {
-                d.ce("createHandlerNativeCaller_doCall", outExecution);
-                return TGS_Tuple2.of(type, outExecution);
+                request.sendError404("nativeCaller", "ERROR: outExecution:" + outExecution);
+                return null;
             }
             var firstSpaceIndex = outExecution.indexOf(" ");
             if (firstSpaceIndex != -1) {
                 var typeStr = outExecution.substring(0, firstSpaceIndex);
                 var typeNew = TGS_FileTypes.findByContenTypePrefix(typeStr);
                 if (typeNew == null) {
-                    d.ce("createHandlerNativeCaller_doCall", "typeNew != null", outExecution);
-                    return TGS_Tuple2.of(type, "ERROR: typeNew == null");
+                    request.sendError404("nativeCaller", "ERROR: typeNew == null -> outExecution: " + outExecution);
+                    return null;
                 }
                 type = typeNew;
                 outExecution = outExecution.substring(firstSpaceIndex + 1);
+                d_caller.ci("nativeCaller", "space found", "typeNew", typeNew);
+                d_caller.ci("nativeCaller", "fixed", "outExecution", outExecution);
             }
             return TGS_Tuple2.of(type, outExecution);
         }, settings.onHandlerString_removeHiddenChars);
     }
     final static private TS_ThreadSyncLst<Row> rows = new TS_ThreadSyncLst();
 
-    private static String createHandlerNativeCaller_doCall_sub(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
-        var result = TS_ThreadAsyncAwait.callSingle(killer, maxExecutionDuration, kt -> {
+    private static String nativeCaller_call(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
+        var await = TS_ThreadAsyncAwait.callSingle(killer, maxExecutionDuration, kt -> {
             var cmdList = pathExecutor.toString().endsWith("jar")
                     ? List.of("java", "--enable-preview", "--add-modules", "jdk.incubator.vector", "-jar", pathExecutor.toString(), rowHash)
                     : List.of(pathExecutor.toString(), rowHash);
             return TS_OsProcess.of(cmdList);
         });
-        if (result.hasError()) {
-            request.sendError404("ERROR: execute", result.exceptionIfFailed.get().toString());
+        if (await.hasError()) {
+            request.sendError404("nativeCaller_call", "ERROR: await.exception: " + await.exceptionIfFailed.get().toString());
             return null;
         }
-        var process = result.resultIfSuccessful.get();
+        var process = await.resultIfSuccessful.get();
         if (process.exception != null) {
-            request.sendError404("ERROR: execute.process", "exitValue=" + process.exitValue + " | exception=" + process.exception);
+            request.sendError404("nativeCaller_call", "ERROR: process.exception != null -> " + process.exception);
             return null;
         }
-        d.ci("createHandlerNativeCaller_doCall_sub", "process.exitValue", process.exitValue, "process.output", process.output);
         return process.output;
     }
 
-    private static Path createHandlerNativeCaller_doCall_pathExecutor(boolean isWindows, TS_SHttpHandlerRequest request) {
+    private static Path nativeCaller_pick(boolean isWindows, TS_SHttpHandlerRequest request) {
         var servletName = request.url.path.fileOrServletName;
         var fileNameLabel = TGS_Coronator.ofStr()
                 .anoint(val -> servletName)
                 .anointIf(TGS_StringUtils::isNullOrEmpty, val -> "home")
                 .anoint(val -> TGS_FileUtilsTur.toSafe(val))
                 .coronate();
-        d.ci("createHandlerNativeCaller_doCall_pathExecutor", "fileNameLabel", fileNameLabel);
+        d.ci("nativeCaller_pick", "fileNameLabel", fileNameLabel);
         var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
             if (!isWindows) {
                 var sh = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".sh");
                 if (TS_FileUtils.isExistFile(sh)) {
-                    d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", sh);
+                    d.ci("nativeCaller_pick", "picked", sh);
                     return sh;
                 }
                 request.sendError404("ERROR: sh file not found", sh.toString());
@@ -178,18 +192,18 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             if (isWindows) {
                 var bat = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".bat");
                 if (TS_FileUtils.isExistFile(bat)) {
-                    d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", bat);
+                    d.ci("nativeCaller_pick", "picked", bat);
                     return bat;
                 }
                 var exe = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".exe");
                 if (TS_FileUtils.isExistFile(exe)) {
-                    d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", exe);
+                    d.ci("nativeCaller_pick", "picked", exe);
                     return exe;
                 }
             }
             var jar = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".jar");
             if (TS_FileUtils.isExistFile(jar)) {
-                d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", jar);
+                d.ci("nativeCaller_pick", "picked", jar);
                 return jar;
             }
             request.sendError404("ERROR: bat or exe file not found", TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".???").toString());
