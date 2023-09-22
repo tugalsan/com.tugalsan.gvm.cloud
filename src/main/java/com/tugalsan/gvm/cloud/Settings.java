@@ -20,36 +20,36 @@ public class Settings {
         var propsExists = TS_FileUtils.isExistFile(propsFile);
         var props = propsExists ? TS_FilePropertiesUtils.read(propsFile) : new Properties();
 
-        var onHandlerFile_filterUrlsWithHiddenCharsStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_onHandlerFile_filterUrlsWithHiddenChars", "true");
+        var onHandlerFile_filterUrlsWithHiddenCharsStr = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_onHandlerFile_filterUrlsWithHiddenChars", "true");
         d.ci("construtor", "onHandlerFile_filterUrlsWithHiddenChars", onHandlerFile_filterUrlsWithHiddenCharsStr);
         onHandlerFile_filterUrlsWithHiddenChars = TGS_UnSafe.call((() -> Boolean.valueOf(onHandlerFile_filterUrlsWithHiddenCharsStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for onHandlerFile_filterUrlsWithHiddenCharsStr: Cannot convert String to Boolean: " + onHandlerFile_filterUrlsWithHiddenCharsStr)));
 
-        var onHandlerString_removeHiddenCharsStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_onHandlerString_removeHiddenChars", "true");
+        var onHandlerString_removeHiddenCharsStr = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_onHandlerString_removeHiddenChars", "true");
         d.ci("construtor", "onHandlerString_removeHiddenCharsStr", onHandlerString_removeHiddenCharsStr);
         onHandlerString_removeHiddenChars = TGS_UnSafe.call((() -> Boolean.valueOf(onHandlerString_removeHiddenCharsStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for onHandlerString_removeHiddenCharsStr: Cannot convert String to Boolean: " + onHandlerString_removeHiddenCharsStr)));
 
-        ip = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_ip", "localhost");
+        ip = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_ip", "localhost");
         d.ci("construtor", "ip", ip);
 
-        var redirectToSSLStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_sslRedirect", "true");
+        var redirectToSSLStr = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_sslRedirect", "true");
         d.ci("construtor", "redirectToSSLStr", redirectToSSLStr);
         redirectToSSL = TGS_UnSafe.call((() -> Boolean.valueOf(redirectToSSLStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for sslRedirectStr: Cannot convert String to Boolean: " + redirectToSSLStr)));
 
-        var sslPortStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_sslPort", "8081");
+        var sslPortStr = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_sslPort", "8081");
         d.ci("construtor", "sslPortStr", sslPortStr);
         sslPort = TGS_UnSafe.call((() -> Integer.valueOf(sslPortStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for sslPortStr: Cannot convert String to Integer: " + sslPortStr)));
 
-        var sslPathStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_sslPath", "D:/xampp_data/SSL/tomcat.p12");
+        var sslPathStr = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_sslPath", "D:/xampp_data/SSL/tomcat.p12");
         d.ci("construtor", "sslPathStr", sslPathStr);
         sslPath = TGS_UnSafe.call((() -> Path.of(sslPathStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for sslPathStr: Cannot convert String to Path: " + sslPathStr)));
 
-        sslPass = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_sslPass", "MyPass");
+        sslPass = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_sslPass", "MyPass");
         d.ci("construtor", "sslPass", sslPass);
 
-        fileHandlerServletName = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_fileHandlerServletName", "/file/");
+        fileHandlerServletName = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_fileHandlerServletName", "/file/");
         d.ci("construtor", "fileHandlerServletName", fileHandlerServletName);
 
-        var fileHandlerRootStr = TS_FilePropertiesUtils.getValue(props, "com.tugalsan.gvm.cloud.Main_fileHandlerRoot", "D:/file");
+        var fileHandlerRootStr = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_fileHandlerRoot", "D:/file");
         d.ci("construtor", "fileHandlerRoot", fileHandlerRootStr);
         fileHandlerRoot = TGS_UnSafe.call((() -> Path.of(fileHandlerRootStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for fileHandlerRootStr: Cannot convert String to Path: " + fileHandlerRootStr)));
 

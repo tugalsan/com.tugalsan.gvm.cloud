@@ -17,6 +17,7 @@ import com.tugalsan.api.thread.server.sync.TS_ThreadSyncLst;
 import com.tugalsan.api.time.client.TGS_Time;
 import com.tugalsan.api.tuple.client.*;
 import com.tugalsan.api.validator.client.*;
+import com.tugalsan.lib.cloud.client.TGS_LibCloudUtils;
 import com.tugalsan.lib.license.server.TS_LibLicenseFileUtils;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -42,16 +43,29 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         var killer = TS_ThreadSyncTrigger.of();//not used for now
         startRowCleanUp(killer);
         var settings = Settings.of(Settings.pathDefault());
-        TGS_ValidatorType1<TS_SHttpHandlerRequest> allowCommon = request -> true;
-        var handlerExecutor = createHandlerNativeCaller(killer, allowCommon, settings);
-        startHttps(settings, allowCommon, handlerExecutor);
+        var handlerNativeSupplier = createHandlerNativeSupplier(settings);
+        var handlerNativeCaller = createHandlerNativeCaller(killer, settings);
+        startHttps(settings, r -> true, handlerNativeSupplier, handlerNativeCaller);
+        startRowCleanUp(killer);
+        if (d.infoEnable) {
+            startRowInfo(killer, Duration.ofSeconds(10));
+        }
+    }
+
+    private static void startRowInfo(TS_ThreadSyncTrigger killer, Duration durInfo) {
+        TS_ThreadAsyncScheduled.every(killer, true, durInfo, kt -> {
+            d.ci("startRowInfo", "rows.size()", rows.size());
+            rows.forEach(row -> d.ci("startRowInfo", row));
+        });
     }
 
     private static void startRowCleanUp(TS_ThreadSyncTrigger killer) {
         TS_ThreadAsyncScheduled.every(killer, true, maxExecutionDuration, kt -> {
             var ago = TGS_Time.ofMinutesAgo((int) maxExecutionDuration.toMinutes());
-            rows.removeAll(row -> ago.hasGreater(row.value2));
-            d.ci("startRowCleanUp", "INFO rows.size()", rows.size());
+            d.ci("startRowCleanUp", "will clean before", ago.toString_dateOnly(), ago.toString_timeOnly_simplified());
+            d.ci("startRowCleanUp", "before", "rows.size()", rows.size());
+            rows.removeAll(row -> ago.hasGreater(row.time));
+            d.ci("startRowCleanUp", "after", "rows.size()", rows.size());
         });
     }
 
@@ -64,70 +78,64 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         );
     }
 
-    private static TS_SHttpHandlerAbstract createHandlerNativeCaller(TS_ThreadSyncTrigger killer, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, Settings settings) {
-        return TS_SHttpHandlerString.of("/", allow, request -> {
-            return switch (request.url.path.fileOrServletName) {
-                case "native_supply" ->
-                    createHandlerNativeCaller_doSupply(request);
-                default ->
-                    createHandlerNativeCaller_doCall(request, killer);
-            };
+    private static TS_SHttpHandlerAbstract createHandlerNativeSupplier(Settings settings) {
+        return TS_SHttpHandlerString.of("/" + TGS_LibCloudUtils.SERVLET_NAME_NATIVE_SUPPLY, r -> r.isLocal(), request -> {
+            if (!request.isLocal()) {
+                return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: !request.isLocal() @ " + request.url);
+            }
+            var pRowHash = request.url.quary.getParameterByName(TGS_LibCloudUtils.SERVLET_PARAM_ROW_HASH);
+            if (pRowHash == null) {
+                return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: pRowHash == null @ " + request.url);
+            }
+            var row = rows.findFirst(r -> Objects.equals(r.hash, pRowHash));
+            if (row == null) {
+                return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: row == null @ " + request.url);
+            }
+            return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, row.url);
+
         }, settings.onHandlerString_removeHiddenChars);
     }
-    final static private TS_ThreadSyncLst<TGS_Tuple3<String, String, TGS_Time>> rows = new TS_ThreadSyncLst();
 
-    private static TGS_Tuple2<TGS_FileTypes, String> createHandlerNativeCaller_doSupply(TS_SHttpHandlerRequest request) {
-        if (!request.isLocal()) {
-            return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: !request.isLocal() @ " + request.url);
-        }
-        var pRowHash = request.url.quary.getParameterByName("rowHash");
-        if (pRowHash == null) {
-            return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: pRowHash == null @ " + request.url);
-        }
-        var row = rows.findFirst(r -> Objects.equals(r.value0, pRowHash));
-        if (row == null) {
-            return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: row == null @ " + request.url);
-        }
-        return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, row.value1);
-    }
-
-    private static TGS_Tuple2<TGS_FileTypes, String> createHandlerNativeCaller_doCall(TS_SHttpHandlerRequest request, TS_ThreadSyncTrigger killer) {
-        var isWindows = TS_OsPlatformUtils.isWindows();
-        d.ci("createHandlerNativeCaller_doCall", "hello");
-        var pathExecutor = createHandlerNativeCaller_doCall_pathExecutor(isWindows, request);
-        d.ci("createHandlerNativeCaller_doCall", "pathExecutor", pathExecutor);
-        if (pathExecutor == null) {
-            return null;
-        }
-        var row = TGS_Tuple3.of(
-                TGS_RandomUtils.nextString(10, true, true, true, false, null),
-                request.url.toString(), TGS_Time.of()
-        );
-        rows.add(row);
-        var outExecution = createHandlerNativeCaller_doCall_sub(killer, maxExecutionDuration, request, pathExecutor, row.value0);
-        rows.removeFirst(row);
-        if (outExecution == null) {
-            return null;
-        }
-        d.ci("createHandlerNativeCaller_doCall", "outExecution", outExecution);
-        var type = TGS_FileTypes.txt_utf8;
-        if (outExecution.startsWith("ERROR") || outExecution.startsWith("ERROR") || outExecution.startsWith("HATA") || outExecution.startsWith("hata")) {
-            d.ce("createHandlerNativeCaller_doCall", outExecution);
-            return TGS_Tuple2.of(type, outExecution);
-        }
-        var firstSpaceIndex = outExecution.indexOf(" ");
-        if (firstSpaceIndex != -1) {
-            var typeStr = outExecution.substring(0, firstSpaceIndex);
-            var typeNew = TGS_FileTypes.findByContenTypePrefix(typeStr);
-            if (typeNew == null) {
-                d.ce("createHandlerNativeCaller_doCall", "typeNew != null", outExecution);
-                return TGS_Tuple2.of(type, "ERROR: typeNew == null");
+    private static TS_SHttpHandlerAbstract createHandlerNativeCaller(TS_ThreadSyncTrigger killer, Settings settings) {
+        return TS_SHttpHandlerString.of("/", r -> true, request -> {
+            var isWindows = TS_OsPlatformUtils.isWindows();
+            d.ci("createHandlerNativeCaller_doCall", "hello");
+            var pathExecutor = createHandlerNativeCaller_doCall_pathExecutor(isWindows, request);
+            d.ci("createHandlerNativeCaller_doCall", "pathExecutor", pathExecutor);
+            if (pathExecutor == null) {
+                return null;
             }
-            type = typeNew;
-            outExecution = outExecution.substring(firstSpaceIndex + 1);
-        }
-        return TGS_Tuple2.of(type, outExecution);
+            var row = Row.of(
+                    TGS_RandomUtils.nextString(20, true, true, true, false, null),
+                    request.url.toString(), TGS_Time.of()
+            );
+            rows.add(row);
+            var outExecution = createHandlerNativeCaller_doCall_sub(killer, maxExecutionDuration, request, pathExecutor, row.hash);
+            rows.removeFirst(row);
+            if (outExecution == null) {
+                return null;
+            }
+            d.ci("createHandlerNativeCaller_doCall", "outExecution", outExecution);
+            var type = TGS_FileTypes.txt_utf8;
+            if (outExecution.startsWith("ERROR") || outExecution.startsWith("ERROR") || outExecution.startsWith("HATA") || outExecution.startsWith("hata")) {
+                d.ce("createHandlerNativeCaller_doCall", outExecution);
+                return TGS_Tuple2.of(type, outExecution);
+            }
+            var firstSpaceIndex = outExecution.indexOf(" ");
+            if (firstSpaceIndex != -1) {
+                var typeStr = outExecution.substring(0, firstSpaceIndex);
+                var typeNew = TGS_FileTypes.findByContenTypePrefix(typeStr);
+                if (typeNew == null) {
+                    d.ce("createHandlerNativeCaller_doCall", "typeNew != null", outExecution);
+                    return TGS_Tuple2.of(type, "ERROR: typeNew == null");
+                }
+                type = typeNew;
+                outExecution = outExecution.substring(firstSpaceIndex + 1);
+            }
+            return TGS_Tuple2.of(type, outExecution);
+        }, settings.onHandlerString_removeHiddenChars);
     }
+    final static private TS_ThreadSyncLst<Row> rows = new TS_ThreadSyncLst();
 
     private static String createHandlerNativeCaller_doCall_sub(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
         var result = TS_ThreadAsyncAwait.callSingle(killer, maxExecutionDuration, kt -> {
@@ -156,6 +164,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 .anointIf(TGS_StringUtils::isNullOrEmpty, val -> "home")
                 .anoint(val -> TGS_FileUtilsTur.toSafe(val))
                 .coronate();
+        d.ci("createHandlerNativeCaller_doCall_pathExecutor", "fileNameLabel", fileNameLabel);
         var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
             if (!isWindows) {
                 var sh = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".sh");
