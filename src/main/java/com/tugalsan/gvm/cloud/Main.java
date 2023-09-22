@@ -5,19 +5,18 @@ import com.tugalsan.api.file.client.*;
 import com.tugalsan.api.file.server.TS_FileUtils;
 import com.tugalsan.api.file.server.TS_PathUtils;
 import com.tugalsan.api.log.server.*;
+import com.tugalsan.api.network.server.TS_NetworkSSLUtils;
 import com.tugalsan.api.os.server.TS_OsPlatformUtils;
 import com.tugalsan.api.os.server.TS_OsProcess;
 import com.tugalsan.api.random.client.TGS_RandomUtils;
 import com.tugalsan.api.servlet.http.server.*;
 import com.tugalsan.api.string.client.*;
-import com.tugalsan.api.thread.server.TS_ThreadWait;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsyncAwait;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsyncScheduled;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncLst;
 import com.tugalsan.api.time.client.TGS_Time;
 import com.tugalsan.api.tuple.client.*;
-import com.tugalsan.api.validator.client.*;
 import com.tugalsan.lib.cloud.client.TGS_LibCloudUtils;
 import com.tugalsan.lib.license.server.TS_LibLicenseFileUtils;
 import java.nio.file.Path;
@@ -37,6 +36,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     //cd D:\git\gvm\com.tugalsan.gvm.cloud
     //java --enable-preview --add-modules jdk.incubator.vector -jar target/com.tugalsan.gvm.cloud-1.0-SNAPSHOT-jar-with-dependencies.jar    
     public static void main(String[] args) {
+        TS_NetworkSSLUtils.disableCertificateValidation();
         if (!TS_LibLicenseFileUtils.check(Main.class)) {
             TS_LibLicenseFileUtils.request(Main.class);
 //            TS_LibLicenseFileUtils.giveTo(TS_LibLicenseFileUtils.fileReq(Main.class));
@@ -67,7 +67,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             var ago = TGS_Time.ofMinutesAgo((int) maxExecutionDuration.toMinutes());
             d_thread.ci("startRowCleanUp", "will clean before", ago.toString_dateOnly(), ago.toString_timeOnly_simplified());
             d_thread.ci("startRowCleanUp", "before", "rows.size()", rows.size());
-            rows.removeAll(row -> ago.hasGreater(row.time));
+//            rows.removeAll(row -> ago.hasGreater(row.time));
             d_thread.ci("startRowCleanUp", "after", "rows.size()", rows.size());
         });
     }
@@ -121,32 +121,27 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             rows.add(row);
             d_caller.ci("nativeCaller", "after.add", "rows.size()", rows.size());
             var outExecution = nativeCaller_call(killer, maxExecutionDuration, request, pathExecutor, row.hash);
-            d_caller.ci("nativeCaller", "before.remove", "rows.size()", rows.size());
-            rows.removeFirst(r -> Objects.equals(r.hash, row.hash));
-            d_caller.ci("nativeCaller", "after.remove", "rows.size()", rows.size());
             if (outExecution == null) {
+                d_caller.ci("nativeCaller", "outExecution == null", "before.remove", "rows.size()", rows.size());
+//                rows.removeFirst(r -> Objects.equals(r.hash, row.hash));
+                d_caller.ci("nativeCaller", "outExecution == null", "after.remove", "rows.size()", rows.size());
                 request.sendError404("nativeCaller", "ERROR: outExecution == null");
                 return null;
             }
             d_caller.ci("nativeCaller", "outExecution", outExecution);
             var type = TGS_FileTypes.txt_utf8;
-            if (outExecution.startsWith("ERROR") || outExecution.startsWith("ERROR") || outExecution.startsWith("HATA") || outExecution.startsWith("hata")) {
-                request.sendError404("nativeCaller", "ERROR: outExecution:" + outExecution);
-                return null;
-            }
             var firstSpaceIndex = outExecution.indexOf(" ");
             if (firstSpaceIndex != -1) {
                 var typeStr = outExecution.substring(0, firstSpaceIndex);
                 var typeNew = TGS_FileTypes.findByContenTypePrefix(typeStr);
-                if (typeNew == null) {
-                    request.sendError404("nativeCaller", "ERROR: typeNew == null -> outExecution: " + outExecution);
-                    return null;
+                if (typeNew != null) {
+                    type = typeNew;
+                    outExecution = outExecution.substring(firstSpaceIndex + 1);
                 }
-                type = typeNew;
-                outExecution = outExecution.substring(firstSpaceIndex + 1);
-                d_caller.ci("nativeCaller", "space found", "typeNew", typeNew);
-                d_caller.ci("nativeCaller", "fixed", "outExecution", outExecution);
             }
+            d_caller.ci("nativeCaller", "SUCCESS", "before.remove", "rows.size()", rows.size());
+//            rows.removeFirst(r -> Objects.equals(r.hash, row.hash));
+            d_caller.ci("nativeCaller", "SUCCESS", "after.remove", "rows.size()", rows.size());
             return TGS_Tuple2.of(type, outExecution);
         }, settings.onHandlerString_removeHiddenChars);
     }
@@ -173,12 +168,13 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
     private static Path nativeCaller_pick(boolean isWindows, TS_SHttpHandlerRequest request) {
         var servletName = request.url.path.fileOrServletName;
+        d_caller.ci("nativeCaller_pick", "servletName", servletName, "url", request.url);
         var fileNameLabel = TGS_Coronator.ofStr()
                 .anoint(val -> servletName)
                 .anointIf(TGS_StringUtils::isNullOrEmpty, val -> "home")
                 .anoint(val -> TGS_FileUtilsTur.toSafe(val))
                 .coronate();
-        d.ci("nativeCaller_pick", "fileNameLabel", fileNameLabel);
+        d_caller.ci("nativeCaller_pick", "fileNameLabel", fileNameLabel);
         var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
             if (!isWindows) {
                 var sh = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".sh");

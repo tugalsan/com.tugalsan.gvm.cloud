@@ -7,6 +7,7 @@ module com.tugalsan.gvm.cloud {
     requires com.tugalsan.api.time;
     requires com.tugalsan.api.runnable;
     requires com.tugalsan.lib.cloud;
+    requires com.tugalsan.api.network;
     requires com.tugalsan.api.random;
     requires com.tugalsan.lib.license;
     requires com.tugalsan.api.os;
