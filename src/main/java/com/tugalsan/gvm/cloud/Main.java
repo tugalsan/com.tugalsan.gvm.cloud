@@ -7,103 +7,47 @@ import com.tugalsan.api.file.server.TS_PathUtils;
 import com.tugalsan.api.log.server.*;
 import com.tugalsan.api.os.server.TS_OsPlatformUtils;
 import com.tugalsan.api.os.server.TS_OsProcess;
+import com.tugalsan.api.random.client.TGS_RandomUtils;
 import com.tugalsan.api.servlet.http.server.*;
 import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
 import com.tugalsan.api.thread.server.async.TS_ThreadAsyncAwait;
+import com.tugalsan.api.thread.server.async.TS_ThreadAsyncScheduled;
+import com.tugalsan.api.thread.server.sync.TS_ThreadSyncLst;
+import com.tugalsan.api.time.client.TGS_Time;
 import com.tugalsan.api.tuple.client.*;
 import com.tugalsan.api.validator.client.*;
+import com.tugalsan.lib.license.server.TS_LibLicenseFileUtils;
 import java.nio.file.Path;
-import java.sql.Statement;
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 
 public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
     final private static TS_Log d = TS_Log.of(true, Main.class);
+    final private static Duration maxExecutionDuration = Duration.ofMinutes(10);
 
-    /*TODO LIST
-        - settings
-            - make isHackedUrl check optional
-            - for some executors, db implementation may not be needed, like home page,
-                - it can be defined in settings and db functions may be skipped
-                - hence one can write an html file from simple batch file :P
-        - stringHandler
-            - use a custom return-object rather then TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "...")
-                - add Access-Control-Allow-Origin option to it
-        - db functions
-            - write the memory db functions implementations that can be compiled with graalvm 
-    */
-    
-    
     //HOW TO EXECUTE
     //WHEN RUNNING IN NETBEANS, ALL DEPENDENCIES SHOULD HAVE TARGET FOLDER!
     //cd D:\git\gvm\com.tugalsan.gvm.cloud
     //java --enable-preview --add-modules jdk.incubator.vector -jar target/com.tugalsan.gvm.cloud-1.0-SNAPSHOT-jar-with-dependencies.jar    
     public static void main(String[] args) {
+        if (!TS_LibLicenseFileUtils.check(Main.class)) {
+            TS_LibLicenseFileUtils.request(Main.class);
+//            TS_LibLicenseFileUtils.giveTo(TS_LibLicenseFileUtils.fileReq(Main.class));
+            d.ce("main", "ERROR: Not licensed yet");
+            return;
+        }
         var killer = TS_ThreadSyncTrigger.of();//not used for now
         var settings = Settings.of(Settings.pathDefault());
-        TGS_ValidatorType1<TS_SHttpHandlerRequest> allow = request -> isAllowed(request);
-        var handlerExecutor = createHandlerExecutor(killer, allow, settings);
-        startHttps(settings, allow, handlerExecutor);
-    }
-
-    @Deprecated //TODO ALLOW LOGIC
-    private static boolean isAllowed(TS_SHttpHandlerRequest request) {
-        d.ci("isAllowed", "hello");
-        if (!request.isLocal()) {
-            request.sendError404("isAllowed", "ERROR: Will work only localhost 😠");
-            return false;
-        }
-        return true;
-    }
-
-    @Deprecated //TODO DB OPS
-    private static TGS_Tuple2<TGS_FileTypes, String> createReply_usingDB(Statement stmt, long rowId, String outExecution) {
-        var outReply = outExecution + " and data of rowId";
-        var type = "txt";
-        return TGS_Tuple2.of(TGS_FileTypes.findByContenTypePrefix(type), outReply);
-    }
-
-    @Deprecated //TODO DB OPS
-    private static Long pushUrl2DB_and_FetchRowId(TS_SHttpHandlerRequest request, Statement stmt) {
-//      stmt.execute("CREATE TABLE IF NOT EXISTS mytable (`col` VARCHAR(16) NOT NULL)");
-        return 0L; //TODO push request.url.toString() to db, fetch row id
-    }
-
-    private static TS_SHttpHandlerAbstract createHandlerExecutor(TS_ThreadSyncTrigger killer, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, Settings settings) {
-        var maxExecutionDuration = Duration.ofMinutes(10);
-        var isWindows = TS_OsPlatformUtils.isWindows();
-        return TS_SHttpHandlerString.of("/", allow, request -> {
-            d.ci("createHandlerExecutor.of", "hello");
-            var pathExecutor = chooseExecutor(isWindows, request);
-            d.ci("createHandlerExecutor.of", "pathExecutor", pathExecutor);
-            if (pathExecutor == null) {
-                return null;
-            }
-//            try {
-//                Class.forName("org.hsqldb.jdbc.JDBCDriver");
-//                try (var con = DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "SA", "")) {
-//                    try (var stmt = con.createStatement()) {
-            Statement stmt = null;
-            var rowId = pushUrl2DB_and_FetchRowId(request, stmt);
-            d.ci("createHandlerExecutor.of", "rowId", rowId);
-            if (rowId == null) {
-                return null;
-            }
-            var outExecution = execute(killer, maxExecutionDuration, request, pathExecutor, rowId);
-            if (outExecution == null) {
-                return null;
-            }
-            d.ci("createHandlerExecutor.of", "outExecution", outExecution);
-            return createReply_usingDB(stmt, rowId, outExecution);
-//                    }
-//                }
-//            } catch (ClassNotFoundException | SQLException e) {
-//                request.sendError404("createHandlerExecutor.handle", "ERROR: failed to load HSQLDB JDBC driver.");
-//                return null;
-//            }
-        }, settings.onHandlerString_removeHiddenChars);
+        TGS_ValidatorType1<TS_SHttpHandlerRequest> allowCommon = request -> true;
+        var handlerExecutor = createHandlerExecutor(killer, allowCommon, settings);
+        startHttps(settings, allowCommon, handlerExecutor);
+        TS_ThreadAsyncScheduled.every(killer, true, maxExecutionDuration, kt -> {
+            var ago = TGS_Time.ofMinutesAgo((int) maxExecutionDuration.toMinutes());
+            rows.removeAll(row -> ago.hasGreater(row.value2));
+        });
     }
 
     private static void startHttps(Settings settings, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, TS_SHttpHandlerAbstract... customHandler) {
@@ -115,9 +59,74 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         );
     }
 
-    private static String execute(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, long rowId) {
+    private static TS_SHttpHandlerAbstract createHandlerExecutor(TS_ThreadSyncTrigger killer, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, Settings settings) {
+        return TS_SHttpHandlerString.of("/", allow, request -> {
+            return switch (request.url.path.fileOrServletName) {
+                case "native" ->
+                    handleNative(request, killer);
+                default ->
+                    handleExecute(request, killer);
+            };
+        }, settings.onHandlerString_removeHiddenChars);
+    }
+    final static private TS_ThreadSyncLst<TGS_Tuple3<String, String, TGS_Time>> rows = new TS_ThreadSyncLst();
+
+    private static TGS_Tuple2<TGS_FileTypes, String> handleNative(TS_SHttpHandlerRequest request, TS_ThreadSyncTrigger killer) {
+        if (!request.isLocal()) {
+            return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: !request.isLocal() @ " + request.url);
+        }
+        var pRowHash = request.url.quary.getParameterByName("rowHash");
+        if (pRowHash == null) {
+            return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: pRowHash == null @ " + request.url);
+        }
+        var row = rows.findFirst(r -> Objects.equals(r.value0, pRowHash));
+        if (row == null) {
+            return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: row == null @ " + request.url);
+        }
+        return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, row.value1);
+    }
+
+    private static TGS_Tuple2<TGS_FileTypes, String> handleExecute(TS_SHttpHandlerRequest request, TS_ThreadSyncTrigger killer) {
+        var isWindows = TS_OsPlatformUtils.isWindows();
+        d.ci("handleExecute", "hello");
+        var pathExecutor = chooseExecutor(isWindows, request);
+        d.ci("handleExecute", "pathExecutor", pathExecutor);
+        if (pathExecutor == null) {
+            return null;
+        }
+        var row = TGS_Tuple3.of(
+                TGS_RandomUtils.nextString(10, true, true, true, false, null),
+                request.url.toString(), TGS_Time.of()
+        );
+        rows.add(row);
+        var outExecution = execute(killer, maxExecutionDuration, request, pathExecutor, row.value0);
+        rows.removeFirst(row);
+        if (outExecution == null) {
+            return null;
+        }
+        d.ci("handleExecute", "outExecution", outExecution);
+        var type = TGS_FileTypes.txt_utf8;
+        if (outExecution.startsWith("ERROR") || outExecution.startsWith("ERROR") || outExecution.startsWith("HATA") || outExecution.startsWith("hata")) {
+            d.ce("handleExecute", outExecution);
+            return TGS_Tuple2.of(type, outExecution);
+        }
+        var firstSpaceIndex = outExecution.indexOf(" ");
+        if (firstSpaceIndex != -1) {
+            var typeStr = outExecution.substring(0, firstSpaceIndex);
+            var typeNew = TGS_FileTypes.findByContenTypePrefix(typeStr);
+            if (typeNew == null) {
+                d.ce("handleExecute", "typeNew != null", outExecution);
+                return TGS_Tuple2.of(type, "ERROR: typeNew == null");
+            }
+            type = typeNew;
+            outExecution = outExecution.substring(firstSpaceIndex + 1);
+        }
+        return TGS_Tuple2.of(type, outExecution);
+    }
+
+    private static String execute(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
         var result = TS_ThreadAsyncAwait.callSingle(killer, maxExecutionDuration, kt -> {
-            return TS_OsProcess.of(List.of(pathExecutor.toString(), String.valueOf(rowId)));
+            return TS_OsProcess.of(List.of(pathExecutor.toString(), rowHash));
         });
         if (result.hasError()) {
             request.sendError404("ERROR: execute", result.exceptionIfFailed.get().toString());
