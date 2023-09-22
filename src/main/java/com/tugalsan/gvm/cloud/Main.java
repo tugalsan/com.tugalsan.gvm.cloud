@@ -40,13 +40,18 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             return;
         }
         var killer = TS_ThreadSyncTrigger.of();//not used for now
+        startRowCleanUp(killer);
         var settings = Settings.of(Settings.pathDefault());
         TGS_ValidatorType1<TS_SHttpHandlerRequest> allowCommon = request -> true;
-        var handlerExecutor = createHandlerExecutor(killer, allowCommon, settings);
+        var handlerExecutor = createHandlerNativeCaller(killer, allowCommon, settings);
         startHttps(settings, allowCommon, handlerExecutor);
+    }
+
+    private static void startRowCleanUp(TS_ThreadSyncTrigger killer) {
         TS_ThreadAsyncScheduled.every(killer, true, maxExecutionDuration, kt -> {
             var ago = TGS_Time.ofMinutesAgo((int) maxExecutionDuration.toMinutes());
             rows.removeAll(row -> ago.hasGreater(row.value2));
+            d.ci("startRowCleanUp", "INFO rows.size()", rows.size());
         });
     }
 
@@ -59,19 +64,19 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         );
     }
 
-    private static TS_SHttpHandlerAbstract createHandlerExecutor(TS_ThreadSyncTrigger killer, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, Settings settings) {
+    private static TS_SHttpHandlerAbstract createHandlerNativeCaller(TS_ThreadSyncTrigger killer, TGS_ValidatorType1<TS_SHttpHandlerRequest> allow, Settings settings) {
         return TS_SHttpHandlerString.of("/", allow, request -> {
             return switch (request.url.path.fileOrServletName) {
-                case "native" ->
-                    handleNative(request, killer);
+                case "native_supply" ->
+                    createHandlerNativeCaller_doSupply(request);
                 default ->
-                    handleExecute(request, killer);
+                    createHandlerNativeCaller_doCall(request, killer);
             };
         }, settings.onHandlerString_removeHiddenChars);
     }
     final static private TS_ThreadSyncLst<TGS_Tuple3<String, String, TGS_Time>> rows = new TS_ThreadSyncLst();
 
-    private static TGS_Tuple2<TGS_FileTypes, String> handleNative(TS_SHttpHandlerRequest request, TS_ThreadSyncTrigger killer) {
+    private static TGS_Tuple2<TGS_FileTypes, String> createHandlerNativeCaller_doSupply(TS_SHttpHandlerRequest request) {
         if (!request.isLocal()) {
             return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: !request.isLocal() @ " + request.url);
         }
@@ -86,11 +91,11 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, row.value1);
     }
 
-    private static TGS_Tuple2<TGS_FileTypes, String> handleExecute(TS_SHttpHandlerRequest request, TS_ThreadSyncTrigger killer) {
+    private static TGS_Tuple2<TGS_FileTypes, String> createHandlerNativeCaller_doCall(TS_SHttpHandlerRequest request, TS_ThreadSyncTrigger killer) {
         var isWindows = TS_OsPlatformUtils.isWindows();
-        d.ci("handleExecute", "hello");
-        var pathExecutor = chooseExecutor(isWindows, request);
-        d.ci("handleExecute", "pathExecutor", pathExecutor);
+        d.ci("createHandlerNativeCaller_doCall", "hello");
+        var pathExecutor = createHandlerNativeCaller_doCall_pathExecutor(isWindows, request);
+        d.ci("createHandlerNativeCaller_doCall", "pathExecutor", pathExecutor);
         if (pathExecutor == null) {
             return null;
         }
@@ -99,15 +104,15 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 request.url.toString(), TGS_Time.of()
         );
         rows.add(row);
-        var outExecution = execute(killer, maxExecutionDuration, request, pathExecutor, row.value0);
+        var outExecution = createHandlerNativeCaller_doCall_sub(killer, maxExecutionDuration, request, pathExecutor, row.value0);
         rows.removeFirst(row);
         if (outExecution == null) {
             return null;
         }
-        d.ci("handleExecute", "outExecution", outExecution);
+        d.ci("createHandlerNativeCaller_doCall", "outExecution", outExecution);
         var type = TGS_FileTypes.txt_utf8;
         if (outExecution.startsWith("ERROR") || outExecution.startsWith("ERROR") || outExecution.startsWith("HATA") || outExecution.startsWith("hata")) {
-            d.ce("handleExecute", outExecution);
+            d.ce("createHandlerNativeCaller_doCall", outExecution);
             return TGS_Tuple2.of(type, outExecution);
         }
         var firstSpaceIndex = outExecution.indexOf(" ");
@@ -115,7 +120,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             var typeStr = outExecution.substring(0, firstSpaceIndex);
             var typeNew = TGS_FileTypes.findByContenTypePrefix(typeStr);
             if (typeNew == null) {
-                d.ce("handleExecute", "typeNew != null", outExecution);
+                d.ce("createHandlerNativeCaller_doCall", "typeNew != null", outExecution);
                 return TGS_Tuple2.of(type, "ERROR: typeNew == null");
             }
             type = typeNew;
@@ -124,7 +129,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         return TGS_Tuple2.of(type, outExecution);
     }
 
-    private static String execute(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
+    private static String createHandlerNativeCaller_doCall_sub(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
         var result = TS_ThreadAsyncAwait.callSingle(killer, maxExecutionDuration, kt -> {
             return TS_OsProcess.of(List.of(pathExecutor.toString(), rowHash));
         });
@@ -137,11 +142,11 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             request.sendError404("ERROR: execute.process", process.exception.toString());
             return null;
         }
-        d.ci("execute", "process.output", process.output);
+        d.ci("createHandlerNativeCaller_doCall_sub", "process.output", process.output);
         return process.output;
     }
 
-    private static Path chooseExecutor(boolean isWindows, TS_SHttpHandlerRequest request) {
+    private static Path createHandlerNativeCaller_doCall_pathExecutor(boolean isWindows, TS_SHttpHandlerRequest request) {
         var servletName = request.url.path.fileOrServletName;
         var fileNameLabel = TGS_Coronator.ofStr()
                 .anoint(val -> servletName)
@@ -163,7 +168,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             }
             var exe = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".exe");
             if (!TS_FileUtils.isExistFile(exe)) {
-                request.sendError404("chooseExecutor", "ERROR: bat or exe file not found, " + bat.toString() + ", " + exe.toString());
+                request.sendError404("createHandlerNativeCaller_doCall_pathExecutor", "ERROR: bat or exe file not found, " + bat.toString() + ", " + exe.toString());
                 return null;
             }
             return null;

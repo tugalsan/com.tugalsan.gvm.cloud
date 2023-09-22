@@ -13,7 +13,7 @@ public class Settings {
     final private static TS_Log d = TS_Log.of(true, Settings.class);
 
     public static Path pathDefault() {
-        return TS_PathUtils.getPathCurrent_nio(Settings.class.getName() + ".properties");
+        return TS_PathUtils.getPathCurrent_nio(Settings.class.getPackageName()+ ".properties");
     }
 
     private Settings(Path propsFile) {
