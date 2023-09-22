@@ -131,18 +131,21 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
     private static String createHandlerNativeCaller_doCall_sub(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
         var result = TS_ThreadAsyncAwait.callSingle(killer, maxExecutionDuration, kt -> {
-            return TS_OsProcess.of(List.of(pathExecutor.toString(), rowHash));
+            var cmdList = pathExecutor.toString().endsWith("jar")
+                    ? List.of("java", "--enable-preview", "--add-modules", "jdk.incubator.vector", "-jar", pathExecutor.toString(), rowHash)
+                    : List.of(pathExecutor.toString(), rowHash);
+            return TS_OsProcess.of(cmdList);
         });
         if (result.hasError()) {
             request.sendError404("ERROR: execute", result.exceptionIfFailed.get().toString());
             return null;
         }
         var process = result.resultIfSuccessful.get();
-        if (!process.exitValueOk()) {
-            request.sendError404("ERROR: execute.process", process.exception.toString());
+        if (process.exception != null) {
+            request.sendError404("ERROR: execute.process", "exitValue=" + process.exitValue + " | exception=" + process.exception);
             return null;
         }
-        d.ci("createHandlerNativeCaller_doCall_sub", "process.output", process.output);
+        d.ci("createHandlerNativeCaller_doCall_sub", "process.exitValue", process.exitValue, "process.output", process.output);
         return process.output;
     }
 
@@ -163,17 +166,24 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 request.sendError404("ERROR: sh file not found", sh.toString());
                 return null;
             }
-            var bat = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".bat");
-            if (TS_FileUtils.isExistFile(bat)) {
-                d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", bat);
-                return bat;
+            if (isWindows) {
+                var bat = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".bat");
+                if (TS_FileUtils.isExistFile(bat)) {
+                    d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", bat);
+                    return bat;
+                }
+                var exe = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".exe");
+                if (TS_FileUtils.isExistFile(exe)) {
+                    d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", exe);
+                    return exe;
+                }
             }
-            var exe = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".exe");
-            if (TS_FileUtils.isExistFile(exe)) {
-                d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", exe);
-                return exe;
+            var jar = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".jar");
+            if (TS_FileUtils.isExistFile(jar)) {
+                d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", jar);
+                return jar;
             }
-            request.sendError404("ERROR: bat or exe file not found", bat.toString() + " | " + exe.toString());
+            request.sendError404("ERROR: bat or exe file not found", TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".???").toString());
             return null;
         });
         return filePath;
