@@ -156,21 +156,24 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
             if (!isWindows) {
                 var sh = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".sh");
-                if (!TS_FileUtils.isExistFile(sh)) {
-                    request.sendError404("ERROR: sh file not found", sh.toString());
-                    return null;
+                if (TS_FileUtils.isExistFile(sh)) {
+                    d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", sh);
+                    return sh;
                 }
-                return sh;
+                request.sendError404("ERROR: sh file not found", sh.toString());
+                return null;
             }
             var bat = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".bat");
             if (TS_FileUtils.isExistFile(bat)) {
+                d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", bat);
                 return bat;
             }
             var exe = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".exe");
-            if (!TS_FileUtils.isExistFile(exe)) {
-                request.sendError404("createHandlerNativeCaller_doCall_pathExecutor", "ERROR: bat or exe file not found, " + bat.toString() + ", " + exe.toString());
-                return null;
+            if (TS_FileUtils.isExistFile(exe)) {
+                d.ci("createHandlerNativeCaller_doCall_pathExecutor", "picked", exe);
+                return exe;
             }
+            request.sendError404("ERROR: bat or exe file not found", bat.toString() + " | " + exe.toString());
             return null;
         });
         return filePath;
