@@ -17,6 +17,8 @@ import com.tugalsan.api.thread.server.async.TS_ThreadAsyncScheduled;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncLst;
 import com.tugalsan.api.time.client.TGS_Time;
 import com.tugalsan.api.tuple.client.*;
+import com.tugalsan.api.url.client.TGS_Url;
+import com.tugalsan.api.url.client.parser.TGS_UrlParser;
 import com.tugalsan.lib.cloud.client.TGS_LibCloudUtils;
 import com.tugalsan.lib.license.server.TS_LibLicenseFileUtils;
 import java.nio.file.Path;
@@ -36,33 +38,44 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     //cd D:\git\gvm\com.tugalsan.gvm.cloud
     //java --enable-preview --add-modules jdk.incubator.vector -jar target/com.tugalsan.gvm.cloud-1.0-SNAPSHOT-jar-with-dependencies.jar    
     public static void main(String[] args) {
+        //PREREQUESTS
         TS_NetworkSSLUtils.disableCertificateValidation();
-        if (!TS_LibLicenseFileUtils.checkLicenseFromLicenseFile(Main.class)) {
-            TS_LibLicenseFileUtils.createRequestFile(Main.class);
-            d.ce("main", "ERROR: Not licensed yet");
+        var kill = TS_ThreadSyncTrigger.of();
+        var settings = Settings.of(Settings.pathDefault());
+        if (settings == null) {
+            d.ce("main", "ERROR: settings == null");
             return;
         }
-        var killer = TS_ThreadSyncTrigger.of();//not used for now
-        startRowCleanUp(killer);
-        var settings = Settings.of(Settings.pathDefault());
+
+        //LICENSE
+        if (!TS_LibLicenseFileUtils.checkLicenseFromLicenseFile(Main.class)) {
+            TS_LibLicenseFileUtils.createLicenseFileFromServer(Main.class);
+        }
+        if (!TS_LibLicenseFileUtils.checkLicenseFromLicenseFile(Main.class)) {
+            TS_LibLicenseFileUtils.createRequestFile(Main.class);
+            d.ce("main", "ERROR: license server cannot be reached", "request file created instead");
+            return;
+        }
+
+        startRowCleanUp(kill);
         var nativeSupplier = nativeSupplier(settings);
-        var nativeCaller = nativeCaller(killer, settings);
+        var nativeCaller = nativeCaller(kill, settings);
         startHttps(settings, nativeSupplier, nativeCaller);
-        startRowCleanUp(killer);
+        startRowCleanUp(kill);
         if (d_thread.infoEnable) {
-            startRowInfo(killer, Duration.ofSeconds(10));
+            startRowInfo(kill, Duration.ofSeconds(10));
         }
     }
 
-    private static void startRowInfo(TS_ThreadSyncTrigger killer, Duration durInfo) {
-        TS_ThreadAsyncScheduled.every(killer, true, durInfo, kt -> {
+    private static void startRowInfo(TS_ThreadSyncTrigger kill, Duration durInfo) {
+        TS_ThreadAsyncScheduled.every(kill, true, durInfo, kt -> {
             d_thread.ci("startRowInfo", "rows.size()", rows.size());
             rows.forEach(row -> d_thread.ci("startRowInfo", row));
         });
     }
 
-    private static void startRowCleanUp(TS_ThreadSyncTrigger killer) {
-        TS_ThreadAsyncScheduled.every(killer, true, maxExecutionDuration, kt -> {
+    private static void startRowCleanUp(TS_ThreadSyncTrigger kill) {
+        TS_ThreadAsyncScheduled.every(kill, true, maxExecutionDuration, kt -> {
             var ago = TGS_Time.ofMinutesAgo((int) maxExecutionDuration.toMinutes());
             d_thread.ci("startRowCleanUp", "will clean before", ago.toString_dateOnly(), ago.toString_timeOnly_simplified());
             d_thread.ci("startRowCleanUp", "before", "rows.size()", rows.size());
@@ -102,7 +115,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         }, settings.onHandlerString_removeHiddenChars);
     }
 
-    private static TS_SHttpHandlerAbstract nativeCaller(TS_ThreadSyncTrigger killer, Settings settings) {
+    private static TS_SHttpHandlerAbstract nativeCaller(TS_ThreadSyncTrigger kill, Settings settings) {
         return TS_SHttpHandlerString.of("/", r -> true, request -> {
             var isWindows = TS_OsPlatformUtils.isWindows();
             d_caller.ci("nativeCaller", "hello");
@@ -117,7 +130,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                     request.url.toString(), TGS_Time.of()
             );
             rows.add(row);
-            var outExecution = nativeCaller_call(killer, maxExecutionDuration, request, pathExecutor, row.hash);
+            var outExecution = nativeCaller_call(kill, maxExecutionDuration, request, pathExecutor, row.hash);
             rows.removeFirst(r -> Objects.equals(r.hash, row.hash));
             if (outExecution == null) {
                 request.sendError404("nativeCaller", "ERROR: outExecution == null");
@@ -139,8 +152,8 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     }
     final static private TS_ThreadSyncLst<Row> rows = new TS_ThreadSyncLst();
 
-    private static String nativeCaller_call(TS_ThreadSyncTrigger killer, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
-        var await = TS_ThreadAsyncAwait.callSingle(killer, maxExecutionDuration, kt -> {
+    private static String nativeCaller_call(TS_ThreadSyncTrigger kill, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
+        var await = TS_ThreadAsyncAwait.callSingle(kill, maxExecutionDuration, kt -> {
             var cmdList = pathExecutor.toString().endsWith("jar")
                     ? List.of("java", "--enable-preview", "--add-modules", "jdk.incubator.vector", "-jar", pathExecutor.toString(), rowHash)
                     : List.of(pathExecutor.toString(), rowHash);
@@ -194,7 +207,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 d.ci("nativeCaller_pick", "picked", jar);
                 return jar;
             }
-            request.sendError404("ERROR: bat or exe file not found", TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".???").toString());
+            request.sendError404("ERROR: bat or exe file not found", TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".xxx").toString());
             return null;
         });
         return filePath;
