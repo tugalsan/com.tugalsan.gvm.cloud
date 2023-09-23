@@ -1,0 +1,6 @@
+--add-modules
+jdk.incubator.vector
+--patch-module
+com.tugalsan.gvm.cloud=_
+--add-reads
+com.tugalsan.gvm.cloud=ALL-UNNAMED
