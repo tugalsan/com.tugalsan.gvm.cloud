@@ -25,5 +25,6 @@ replay_pid*
 
 # com.tugalsan
 *.exe
+*.dll
 *.jar
 */target/**
