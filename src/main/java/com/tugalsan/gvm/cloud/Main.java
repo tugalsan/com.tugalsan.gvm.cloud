@@ -27,8 +27,8 @@ import java.util.Objects;
 public class Main {//extended from com.tugalsan.tst.servlet.http.Main
 
     final private static TS_Log d = TS_Log.of(false, Main.class);
-    final private static TS_Log d_thread = TS_Log.of(true, Main.class);
-    final private static TS_Log d_caller = TS_Log.of(true, Main.class);
+    final private static TS_Log d_thread = TS_Log.of(false, Main.class);
+    final private static TS_Log d_caller = TS_Log.of(false, Main.class);
     final private static Duration maxExecutionDuration = Duration.ofMinutes(10);
 
     //HOW TO EXECUTE
@@ -37,9 +37,8 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     //java --enable-preview --add-modules jdk.incubator.vector -jar target/com.tugalsan.gvm.cloud-1.0-SNAPSHOT-jar-with-dependencies.jar    
     public static void main(String[] args) {
         TS_NetworkSSLUtils.disableCertificateValidation();
-        if (!TS_LibLicenseFileUtils.check(Main.class)) {
-            TS_LibLicenseFileUtils.request(Main.class);
-//            TS_LibLicenseFileUtils.giveTo(TS_LibLicenseFileUtils.fileReq(Main.class));
+        if (!TS_LibLicenseFileUtils.checkLicenseFromLicenseFile(Main.class)) {
+            TS_LibLicenseFileUtils.createRequestFile(Main.class);
             d.ce("main", "ERROR: Not licensed yet");
             return;
         }
@@ -67,7 +66,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             var ago = TGS_Time.ofMinutesAgo((int) maxExecutionDuration.toMinutes());
             d_thread.ci("startRowCleanUp", "will clean before", ago.toString_dateOnly(), ago.toString_timeOnly_simplified());
             d_thread.ci("startRowCleanUp", "before", "rows.size()", rows.size());
-//            rows.removeAll(row -> ago.hasGreater(row.time));
+            rows.removeAll(row -> ago.hasGreater(row.time));
             d_thread.ci("startRowCleanUp", "after", "rows.size()", rows.size());
         });
     }
@@ -117,14 +116,10 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                     TGS_RandomUtils.nextString(20, true, true, true, false, null),
                     request.url.toString(), TGS_Time.of()
             );
-            d_caller.ci("nativeCaller", "before.add", "rows.size()", rows.size());
             rows.add(row);
-            d_caller.ci("nativeCaller", "after.add", "rows.size()", rows.size());
             var outExecution = nativeCaller_call(killer, maxExecutionDuration, request, pathExecutor, row.hash);
+            rows.removeFirst(r -> Objects.equals(r.hash, row.hash));
             if (outExecution == null) {
-                d_caller.ci("nativeCaller", "outExecution == null", "before.remove", "rows.size()", rows.size());
-//                rows.removeFirst(r -> Objects.equals(r.hash, row.hash));
-                d_caller.ci("nativeCaller", "outExecution == null", "after.remove", "rows.size()", rows.size());
                 request.sendError404("nativeCaller", "ERROR: outExecution == null");
                 return null;
             }
@@ -139,9 +134,6 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                     outExecution = outExecution.substring(firstSpaceIndex + 1);
                 }
             }
-            d_caller.ci("nativeCaller", "SUCCESS", "before.remove", "rows.size()", rows.size());
-//            rows.removeFirst(r -> Objects.equals(r.hash, row.hash));
-            d_caller.ci("nativeCaller", "SUCCESS", "after.remove", "rows.size()", rows.size());
             return TGS_Tuple2.of(type, outExecution);
         }, settings.onHandlerString_removeHiddenChars);
     }
