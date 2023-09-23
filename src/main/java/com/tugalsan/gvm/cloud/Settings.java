@@ -35,7 +35,7 @@ public class Settings {
         d.ci("construtor", "redirectToSSLStr", redirectToSSLStr);
         redirectToSSL = TGS_UnSafe.call((() -> Boolean.valueOf(redirectToSSLStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for sslRedirectStr: Cannot convert String to Boolean: " + redirectToSSLStr)));
 
-        var sslPortStr = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_sslPort", "8081");
+        var sslPortStr = TS_FilePropertiesUtils.getValue(props, Settings.class.getPackageName() + "_sslPort", "7443");
         d.ci("construtor", "sslPortStr", sslPortStr);
         sslPort = TGS_UnSafe.call((() -> Integer.valueOf(sslPortStr)), e -> TGS_UnSafe.thrwReturns(new RuntimeException("ERROR for sslPortStr: Cannot convert String to Integer: " + sslPortStr)));
 
