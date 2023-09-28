@@ -17,8 +17,6 @@ import com.tugalsan.api.thread.server.async.TS_ThreadAsyncScheduled;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncLst;
 import com.tugalsan.api.time.client.TGS_Time;
 import com.tugalsan.api.tuple.client.*;
-import com.tugalsan.api.url.client.TGS_Url;
-import com.tugalsan.api.url.client.parser.TGS_UrlParser;
 import com.tugalsan.lib.cloud.client.TGS_LibCloudUtils;
 import com.tugalsan.lib.license.server.TS_LibLicenseFileUtils;
 import java.nio.file.Path;
@@ -96,8 +94,8 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     private static TS_SHttpHandlerAbstract nativeSupplier(Settings settings) {
         return TS_SHttpHandlerString.of("/" + TGS_LibCloudUtils.SERVLET_NAME_NATIVE_SUPPLY, r -> true, request -> {
             d_caller.ci("nativeSupplier", "request.url", request.url);
-            if (!request.isLocal()) {
-                return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: !request.isLocal() @ " + request.url);
+            if (!request.isLocalClient()) {
+                return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: !request.isLocalClient() @ " + request.url);
             }
             d_caller.ci("nativeSupplier", "passed local");
             var pRowHash = request.url.quary.getParameterByName(TGS_LibCloudUtils.SERVLET_PARAM_ROW_HASH);

@@ -55,6 +55,8 @@ public class Settings {
 
         if (!propsExists) {
             TS_FilePropertiesUtils.write(props, propsFile);
+        } else if (!props.equals(TS_FilePropertiesUtils.read(propsFile))) {
+            TS_FilePropertiesUtils.write(props, propsFile);
         }
     }
     final public boolean redirectToSSL, onHandlerString_removeHiddenChars, onHandlerFile_filterUrlsWithHiddenChars;
