@@ -4,6 +4,7 @@ import com.tugalsan.api.coronator.client.TGS_Coronator;
 import com.tugalsan.api.file.client.*;
 import com.tugalsan.api.file.server.TS_FileUtils;
 import com.tugalsan.api.file.server.TS_PathUtils;
+import com.tugalsan.api.file.txt.server.TS_FileTxtUtils;
 import com.tugalsan.api.log.server.*;
 import com.tugalsan.api.network.server.TS_NetworkSSLUtils;
 import com.tugalsan.api.os.server.TS_OsPlatformUtils;
@@ -63,6 +64,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
         if (d_thread.infoEnable) {
             startRowInfo(kill, Duration.ofSeconds(10));
         }
+        d.cr("main", "https://" + settings.ip + ":" + settings.sslPort);
     }
 
     private static void startRowInfo(TS_ThreadSyncTrigger kill, Duration durInfo) {
@@ -122,6 +124,14 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             if (pathExecutor == null) {
                 request.sendError404("nativeCaller", "ERROR: pathExecutor == null");
                 return null;
+            }
+            var nameType = TS_FileUtils.getNameType(pathExecutor);
+            d_caller.ci("nativeCaller", "nameType",nameType);
+            if (nameType.equals("htm")) {
+                return TGS_Tuple2.of(TGS_FileTypes.htm_utf8, TS_FileTxtUtils.toString(pathExecutor));
+            }
+            if (nameType.equals("txt")) {
+                return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, TS_FileTxtUtils.toString(pathExecutor));
             }
             var row = Row.of(
                     TGS_RandomUtils.nextString(20, true, true, true, false, null),
@@ -204,6 +214,16 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             if (TS_FileUtils.isExistFile(jar)) {
                 d.ci("nativeCaller_pick", "picked", jar);
                 return jar;
+            }
+            var htm = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".htm");
+            if (TS_FileUtils.isExistFile(htm)) {
+                d.ci("nativeCaller_pick", "picked", htm);
+                return htm;
+            }
+            var txt = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".txt");
+            if (TS_FileUtils.isExistFile(txt)) {
+                d.ci("nativeCaller_pick", "picked", txt);
+                return txt;
             }
             request.sendError404("ERROR: bat or exe file not found", TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".xxx").toString());
             return null;
