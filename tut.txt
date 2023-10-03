@@ -1,0 +1,10 @@
+wf.msc (microsoft ortak konsol belgesi) -> Gelen Kuralları -> Yeni Kural:
+  - Kural Türü: Bağlantı Noktası
+  - Protokol ve Bağlantı Noktası: 
+	- Protokol: TCP
+	- Belirlli Yerel Bağlantı noktaları: 7443
+  - Eylem: Bağlantıya izin ver
+  - Profile: Her Zaman
+  - Ad: 7443 TCP OPEN
+
+netstat -an | find "7443"
