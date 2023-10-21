@@ -1,1 +1,0 @@
-copy com.tugalsan.gvm.cloud.exe D:\git\gvm\_run\com.tugalsan.gvm.cloud.exe /y
