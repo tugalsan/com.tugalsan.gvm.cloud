@@ -1,0 +1,1978 @@
+<!DOCTYPE html>
+<html lang="tr" dir="ltr" class="Light-Cream">
+
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>
+	:root {
+    --htmlPanelBackground: #AAAAAA;
+    --htmlPanelColorText: #000000;
+    --logoColorText: #E80707;
+
+}
+
+.Light-Cream {
+    --colorBackgroundBlack: #000000;
+    --colorBackgroundYellow: #FFFF7B;
+    --colorBackgroundRed: #FF6f53;
+    --colorBackgroundGreen: #83FF52;
+    --colorBackgroundBlue: #70FFFF;
+    --colorBackgroundGray: #505050;
+    --colorBackgroundGrayLight: #d3d3d3;
+    --colorBackgroundPurple: #8A68B4;
+    --colorBackgroundOrange: #FE7B3F;
+
+    --colorBackground: #C0C0C0;
+    --colorTextPrimary: #000000;
+    --colorTextSecondary: #000044;
+
+    --widgetBackground: #DCDCDC;
+    --widgetOption: #B3B3B3;
+    --widgetSelected: #CCCCCC;
+    --widgetBorder: #000000;
+
+    --popBackground: #C47A45;/*bej*/
+    --panelBackground: #CEC7C1;/*gray*/
+
+}
+.Dark-Blue {
+    --colorBackgroundBlack: #000000;
+    --colorBackgroundYellow: #F5D67B;
+    --colorBackgroundRed: #fd6f53;
+    --colorBackgroundGreen: #83BA52;
+    --colorBackgroundBlue: #70DBCC;
+    --colorBackgroundGray: #505050;
+    --colorBackgroundGrayLight: #d3d3d3;
+    --colorBackgroundPurple: #8A68B4;
+    --colorBackgroundOrange: #FE7B3F;
+
+    --colorBackground: #15202B;
+    --colorTextPrimary: #FFFFFF;
+    --colorTextSecondary: #8899A6;
+
+    --widgetBackground: #192734;
+    --widgetOption: #22303C;
+    --widgetSelected: #2B3844;
+    --widgetBorder: #FFFFFF;
+
+    --popBackground: #3E0000;/*dark red*/
+    --panelBackground: #003E3E;/*dark blue*/
+
+}
+.Dark-Black {
+    --colorBackgroundBlack: #000000;
+    --colorBackgroundYellow: #F5D67B;
+    --colorBackgroundRed: #fd6f53;
+    --colorBackgroundGreen: #83BA52;
+    --colorBackgroundBlue: #70DBCC;
+    --colorBackgroundGray: #505050;
+    --colorBackgroundGrayLight: #d3d3d3;
+    --colorBackgroundPurple: #8A68B4;
+    --colorBackgroundOrange: #FE7B3F;
+
+    --colorBackground: #000000;
+    --colorTextPrimary: #FFFFFF;
+    --colorTextSecondary: #818181;
+
+    --widgetBackground: #282828;
+    --widgetOption: #212126;
+    --widgetSelected: #2E2E37;
+    --widgetBorder: #FFFFFF;
+
+    --popBackground: #3E0000;/*dark red*/
+    --panelBackground: #003E3E;/*dark blue*/
+
+}
+
+* {
+    /*Auto animations*/
+    transition: all 0.2s ease;
+    transition-property: all;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+
+    /*fixes Grid for TexBox Overflow on 100%*/
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+
+}
+
+::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+    background: var(--widgetOption);
+
+}
+::-webkit-scrollbar-thumb {
+    background: var(--panelBackground);
+    -webkit-border-radius: 1ex;
+    -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.75);
+
+}
+::-webkit-scrollbar-corner {
+    background: var(--widgetOption);
+
+}
+
+html {
+    scroll-behavior: smooth !important;
+}
+
+body {
+    background-color: var(--colorBackground) !important;
+    color: var(--colorTextPrimary);
+    border: 0px;
+    padding: 0px;
+    font-family: fontText, Arial Unicode MS, Arial,Helvetica,sans-serif;
+    font-size: small;
+    direction: ltr;
+
+}
+
+pre {
+    font-family: fontText, "courier new", courier;
+
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+
+}
+
+ul {
+    margin:0;
+    padding:0;
+
+}
+
+table, th, td {
+    /*border: 1px solid black;*/
+    border-collapse: collapse;
+
+}
+th, td {
+    padding: 1px;
+
+}
+
+input, textarea, select {
+    background-color: var(--widgetBackground);
+    color: var(--colorTextPrimary);
+    cursor: pointer;
+    padding: 5px;
+
+}
+
+textarea, select {
+    width: 100%;
+
+}
+
+textarea{
+    resize: none;
+
+}
+
+.gwt-Hyperlink {
+    cursor: pointer;
+
+}
+
+button {
+    cursor: pointer;
+    text-align: center;
+
+}
+
+.gwt-Button  {
+    cursor: pointer;
+    text-align: center;
+    background: var(--widgetBackground);
+
+}
+
+
+.gwt-ToggleButton,
+.gwt-PushButton {
+    cursor: pointer;
+    text-align: center;
+    background: var(--widgetBackground);
+    border-radius: 10px;
+
+}
+
+.gwt-ListBox{
+    border-radius: 10px;
+
+}
+
+.gwt-ToggleButton-up,
+.gwt-ToggleButton-up-hovering,
+.gwt-ToggleButton-down,
+.gwt-PushButton-up,
+.gwt-PushButton-up-hovering,
+.gwt-PushButton-up-disabled,
+.gwt-PushButton-down,
+.gwt-PushButton-down-hovering,
+.gwt-PushButton-down-disabled {
+    margin: 0;
+
+}
+
+.gwt-ToggleButton-up,
+.gwt-ToggleButton-up-hovering,
+.gwt-ToggleButton-up-disabled,
+.gwt-PushButton-up,
+.gwt-PushButton-up-hovering,
+.gwt-PushButton-up-disabled {
+    padding: 3px 5px 3px 5px;
+
+}
+
+.gwt-ToggleButton-up,
+.gwt-PushButton-up {
+    border:1px solid #bbb;
+    border-bottom: 1px solid #a0a0a0;
+    cursor: pointer;
+
+}
+
+.gwt-ToggleButton-up-hovering,
+.gwt-PushButton-up-hovering {
+    border: 1px solid;
+    border-color: #9393FF;
+    cursor: pointer;
+
+}
+
+.gwt-ToggleButton-disabled,
+.gwt-PushButton-up-disabled {
+    border: 1px solid #bbb;
+    cursor: default;
+    opacity: .5;
+    filter: alpha(opacity=45);
+    zoom: 1;
+
+}
+
+.gwt-ToggleButton-up,
+.gwt-ToggleButton-up-hovering,
+.gwt-ToggleButton-disabled,
+.gwt-PushButton-down,
+.gwt-PushButton-down-hovering,
+.gwt-PushButton-down-disabled {
+    padding: 4px 4px 2px 6px;
+    outline:none;
+
+}
+
+.gwt-ToggleButton-up,
+.gwt-ToggleButton-up-hovering,
+.gwt-ToggleButton-down,
+.gwt-PushButton-down {
+    border: 1px inset #666;
+    cursor: pointer;
+
+}
+
+.gwt-ToggleButton-up-hovering,
+.gwt-PushButton-down-hovering {
+    border: 1px solid #939393;
+    border-top: 1px solid #333333;
+    cursor: pointer;
+
+}
+
+.gwt-PushButton-down-disabled {
+    border: 1px outset #ccc;
+    cursor: default;
+    opacity: 0.5;
+    filter: alpha(opacity=45);
+    zoom: 1;
+
+}
+
+.gwt-StackLayoutPanel {
+    border-bottom: 1px solid var(--widgetBorder);
+
+}
+.gwt-StackLayoutPanel .gwt-StackLayoutPanelHeader {
+    cursor: pointer;
+    font-weight: bold;
+    padding: 3px;
+    border: 1px solid var(--widgetBorder);
+    border-bottom: 0px;
+    background: var(--widgetBackground);
+
+}
+.gwt-StackLayoutPanel .gwt-StackLayoutPanelHeader-hovering {
+    background: var(--widgetSelected);
+
+}
+.gwt-StackLayoutPanel .gwt-StackLayoutPanelContent {
+    border: 1px solid var(--widgetBorder);
+    border-bottom: 0px;
+    padding: 2px 2px 10px 5px;
+
+}
+
+.gwt-TabPanel {
+
+}
+.gwt-TabPanelBottom {
+
+}
+.gwt-TabBar {
+    border-bottom: 4px solid var(--widgetBackground);
+    background-color: var(--widgetBackground);
+
+}
+.gwt-TabBarItem {
+    padding: 4px;
+    cursor: pointer;
+    border-bottom: 2px var(--widgetOption);
+    margin-right: 2px;
+    opacity: 0.6;
+
+}
+.gwt-TabBarItem-selected {
+    padding: 4px;
+    cursor: default;
+    border-bottom: 2px solid var(--colorBackgroundRed);
+    margin-right: 2px;
+    font-weight: bolder;
+    opacity: 1;
+
+}
+
+.gwt-TabLayoutPanel {
+
+}
+.gwt-TabLayoutPanelTabs {
+    background:  var(--widgetBackground);
+
+}
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelContentContainer {
+    border-color: var(--widgetBorder);
+    border-style: solid;
+    border-width: 0px 2px 2px 2px;
+
+}
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelContent {
+    overflow: auto;
+    padding: 6px;
+
+}
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab {
+    margin-left: 4px;
+    padding: 4px 8px 4px 8px;
+    cursor: pointer;
+    text-align: center;
+    background:  var(--widgetBackground);
+    border-radius: 3px 3px 0px 0px;
+
+}
+.gwt-TabLayoutPanel .gwt-TabLayoutPanelTab-selected {
+    background:  var(--widgetSelected);
+
+}
+
+.gwt-SplitLayoutPanel-HDragger {
+    background: var(--widgetBackground) url(../../../res-other/res/google_com/gwt/png/thumb_vertical.png) center center no-repeat;
+    cursor: col-resize;
+}
+
+.gwt-SplitLayoutPanel-VDragger {
+    background: var(--widgetBackground) url(../../../res-other/res/google_com/gwt/png/thumb_horz.png) center center no-repeat;
+    cursor: row-resize;
+}
+
+.gwt-DateBox {
+    padding: 5px 4px;
+    border: 1px solid var(--widgetBorder);
+    border-top: 1px solid var(--widgetSelected);
+    font-size: 100%;
+
+}
+.gwt-DateBox input {
+    width: 8em;
+
+}
+.dateBoxFormatError {
+    background:  var(--widgetBackground);
+
+}
+.dateBoxPopup {
+
+
+}
+
+.datePickerDay,
+.datePickerWeekdayLabel,
+.datePickerWeekendLabel {
+
+    font-weight: bold !important;
+    color: var(--colorTextPrimary) !important;
+    background: var(--colorBackgroundGray) !important;
+    background-color: var(--colorBackgroundGray) !important;
+    cursor: pointer !important;
+
+}
+
+
+.gwt-DatePicker {
+    color: var(--colorTextPrimary) !important;
+    background: var(--widgetBackground) !important;
+    background-color: var(--widgetBackground) !important;
+    cursor: pointer !important;
+
+}
+
+.gwt-DatePicker div {
+    height: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+    min-width: 3em;
+
+}
+
+.datePickerMonthSelector div {
+    min-width: 2em;
+
+}
+
+.gwt-DatePicker td,
+.datePickerMonthSelector td:focus {
+    color: var(--colorTextPrimary) !important;
+    background: var(--colorBackgroundGray) !important;
+    background-color: var(--colorBackgroundGray) !important;
+    cursor: pointer !important;
+
+}
+
+.datePickerMonthSelector td div{
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+
+}
+.datePickerDays {
+    text-align: center;
+    color: var(--colorTextPrimary) !important;
+    background: var(--widgetBackground) !important;
+    background-color: var(--widgetBackground) !important;
+    cursor: pointer !important;
+
+}
+.datePickerDay {
+    color: var(--colorTextPrimary) !important;
+    background: var(--widgetBackground) !important;
+    background-color: var(--widgetBackground) !important;
+    cursor: pointer !important;
+
+}
+.datePickerDayIsWeekend {
+    color: var(--colorTextPrimary) !important;
+    background: var(--colorBackgroundGray) !important;
+    background-color: var(--colorBackgroundGray) !important;
+    cursor: pointer !important;
+
+}
+.datePickerDayIsFiller {
+    color: gray !important;
+    background: var(--colorBackground) !important;
+    background-color: var(--colorBackground) !important;
+    cursor: pointer !important;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+
+}
+.datePickerDayIsValue {
+    color: var(--colorTextPrimary) !important;
+    background: var(--colorBackgroundBlue) !important;
+    background-color: var(--colorBackgroundBlue) !important;
+    cursor: pointer !important;
+
+}
+.datePickerDayIsDisabled {
+    color: var(--colorTextPrimary) !important;
+    background: var(--colorBackgroundRed) !important;
+    background-color: var(--colorBackgroundRed) !important;
+    cursor: pointer !important;
+
+}
+.datePickerDayIsHighlighted {
+    color: var(--colorTextPrimary) !important;
+    background: var(--widgetBackground) !important;
+    background-color: var(--widgetBackground) !important;
+    cursor: pointer !important;
+
+}
+.datePickerDayIsValueAndHighlighted {
+    color: var(--colorTextPrimary) !important;
+    background: var(--widgetBackground) !important;
+    background-color: var(--widgetBackground) !important;
+    cursor: pointer !important;
+
+}
+.datePickerDayIsToday {
+    color: var(--colorTextPrimary) !important;
+    background: var(--colorBackgroundGreen) !important;
+    background-color: var(--colorBackgroundGreen) !important;
+    cursor: pointer !important;
+
+}
+
+.datePickerMonthSelector {
+    color: var(--colorTextPrimary) !important;
+    background: var(--widgetBackground) !important;
+    background-color: var(--widgetBackground) !important;
+    cursor: pointer !important;
+    width: 100%;
+
+}
+td.datePickerMonth,
+td.datePickerYear {
+    color: var(--colorTextPrimary) !important;
+    background: var(--widgetBackground) !important;
+    background-color: var(--widgetBackground) !important;
+    cursor: pointer !important;
+
+}
+.datePickerPreviousButton,
+.datePickerNextButton,
+.datePickerPreviousYearButton,
+.datePickerNextYearButton {
+    color: var(--colorTextPrimary) !important;
+    background: var(--widgetBackground) !important;
+    background-color: var(--widgetBackground) !important;
+    cursor: pointer !important;
+
+}
+
+.gwt-MenuBar {
+    cursor: pointer;
+    border: none;
+    border-color: var(--widgetBorder);
+}
+
+.gwt-MenuBar > table {
+    border: none;
+
+}
+.gwt-MenuBar > table > tbody {
+    border: none;
+
+}
+.gwt-MenuBar > table > tbody > tr {
+    border: none;
+
+}
+
+
+
+.gwt-MenuBar .gwt-MenuItem {
+    cursor: pointer;
+    border: none !important;
+
+}
+.gwt-MenuBar .gwt-MenuItem-selected {
+    background: var(--widgetSelected);
+    border-radius: 30px;
+
+}
+.gwt-MenuBar-horizontal {
+    background: var(--widgetBackground);
+
+}
+.gwt-MenuBar-horizontal .gwt-MenuItem {
+    padding: 5px 10px;
+    vertical-align: bottom;
+    font-weight: bold;
+    height: 30px;
+
+}
+.gwt-MenuBar-horizontal .gwt-MenuItemSeparator {
+    width: 1px;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+    border-left: 1px solid var(--widgetBorder);
+    background: var(--widgetBackground);
+
+}
+.gwt-MenuBar-horizontal .gwt-MenuItemSeparator .menuSeparatorInner {
+    width: 1px;
+    height: 1px;
+    background: var(--widgetBackground);
+
+}
+.gwt-MenuBar-vertical {
+    margin-top: 0px;
+    margin-left: 0px;
+    background: var(--widgetBackground);
+
+}
+.gwt-MenuBar-vertical table {
+    border-collapse: collapse;
+
+}
+.gwt-MenuBar-vertical .gwt-MenuItem {
+    padding: 8px 20px 8px 5px;
+
+}
+.gwt-MenuBar-vertical .gwt-MenuItemSeparator {
+    padding: 2px 0px;
+
+}
+.gwt-MenuBar-vertical .gwt-MenuItemSeparator .menuSeparatorInner {
+    height: 1px;
+    padding: 0px;
+    border: 0px;
+    border-top: 1px solid var(--widgetBorder);
+    overflow: hidden;
+
+}
+.gwt-MenuBar-vertical .subMenuIcon {
+    padding-right: 1px;
+
+}
+.gwt-MenuBar-vertical .subMenuIcon-selected {
+
+
+}
+
+.gwt-MenuBarPopup > div {
+    border: none;
+
+}
+
+.gwt-MenuBarPopup > div > table {
+    border: none;
+
+}
+
+.gwt-MenuBarPopup > div > table > tbody {
+    border: none;
+
+}
+
+.gwt-MenuBarPopup > div > table > tbody > tr {
+    border: none;
+
+}
+
+.gwt-MenuBarPopup > div > table > tbody > tr > td {
+    border: none;
+
+}
+
+
+
+.gwt-MenuBarPopup .menuPopupTopCenter {
+    background: var(--widgetBackground);
+
+}
+.gwt-MenuBarPopup .menuPopupBottomCenter {
+    background: var(--widgetBackground);
+
+}
+.gwt-MenuBarPopup .menuPopupMiddleLeft {
+    background: var(--widgetBackground);
+
+}
+.gwt-MenuBarPopup .menuPopupMiddleRight {
+    background: var(--widgetBackground);
+
+}
+.gwt-MenuBarPopup .menuPopupMiddleCenter {
+    background: var(--widgetBackground);
+
+}
+.gwt-MenuBarPopup .menuPopupTopLeftInner {
+    width: 1px;
+    height: 1px;
+    zoom: 1;
+
+}
+.gwt-MenuBarPopup .menuPopupTopRightInner {
+    width: 1px;
+    height: 1px;
+    zoom: 1;
+
+}
+.gwt-MenuBarPopup .menuPopupBottomLeftInner {
+    width: 1px;
+    height: 1px;
+    zoom: 1;
+
+}
+.gwt-MenuBarPopup .menuPopupBottomRightInner {
+    width: 1px;
+    height: 1px;
+    zoom: 1;
+
+}
+.gwt-MenuBarPopup .menuPopupTopLeft {
+    background: var(--widgetBackground);
+    border-radius: 30px 0px 0px 0px;
+
+}
+.gwt-MenuBarPopup .menuPopupTopRight {
+    background: var(--widgetBackground);
+    border-radius: 0px 30px 0px 0px;
+
+}
+.gwt-MenuBarPopup .menuPopupBottomLeft {
+    background: var(--widgetBackground);
+    border-radius: 0px 0px 0px 30px;
+
+}
+.gwt-MenuBarPopup .menuPopupBottomRight {
+    background: var(--widgetBackground);
+    border-radius: 0px 0px 30px 0px;
+
+}
+
+.gwt-ProgressBar {
+    background: var(--widgetSelected);
+    border: 1px solid var(--widgetBorder);
+    width: 50px;
+    height: 30px;
+    border-radius: 10px;
+
+}
+.gwt-ProgressBar-textElement {
+    color: var(--colorTextSecondary);
+    width: 50px;
+    height: 30px;
+
+    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.gwt-ProgressBar-barElement {
+    background: var(--widgetBackground);
+    height: 28px;
+    border-radius: 10px;
+
+}
+
+.gwt-RichTextArea {
+    background: var(--htmlPanelBackground);
+    color: var(--htmlPanelColorText);
+
+}
+.gwt-RichTextToolbar {
+    margin: 0px;
+    padding: 3px;
+    background: #e3e8f3 ;
+    border-bottom: 1px solid #BBBBBB;
+
+}
+.gwt-RichTextToolbar .gwt-PushButton-up {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    padding: 0px 1px 0px 0px;
+    border-width: 1px;
+
+}
+.gwt-RichTextToolbar .gwt-PushButton-up-hovering {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    padding: 0px 1px 0px 0px;
+    border-width: 1px;
+
+}
+.gwt-RichTextToolbar .gwt-PushButton-down {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    padding: 0px 0px 0px 1px;
+    border-width: 1px;
+
+}
+.gwt-RichTextToolbar .gwt-PushButton-down-hovering {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    padding: 0px 0px 0px 1px;
+    border-width: 1px;
+
+}
+.gwt-RichTextToolbar .gwt-ToggleButton-up {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    padding: 0px 1px 0px 0px;
+    border:1px solid #bbb;
+    border-bottom: 1px solid #a0a0a0;
+
+}
+.gwt-RichTextToolbar .gwt-ToggleButton-up-hovering {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    padding: 0px 1px 0px 0px;
+    border-width: 1px;
+
+}
+.gwt-RichTextToolbar .gwt-ToggleButton-down {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    padding: 0px 0px 0px 1px;
+    border-width: 1px;
+
+}
+.gwt-RichTextToolbar .gwt-ToggleButton-down-hovering {
+    margin-right: 4px;
+    margin-bottom: 4px;
+    padding: 0px 0px 0px 1px;
+    border-width: 1px;
+
+}
+
+
+.TGC_TableHeaderStyled{
+    cursor: pointer;
+    color: var(--colorTextSecondary);
+    background: var(--widgetOption);
+    text-shadow: none;/*Dont delete, TableCell needs it*/
+
+}
+.TGC_TableRow{
+    cursor: pointer;
+    color: var(--colorTextPrimary);
+    background: var(--widgetBackground);
+
+}
+
+.TGC_Panel{
+    background: var(--panelBackground);
+    border-radius: 10px;
+
+}
+
+.TGC_Pop{
+    background: var(--popBackground);
+    border: 1px solid var(--widgetBorder);
+    border-radius: 10px;
+
+}
+.TGC_PopGlassStyle{
+    opacity:0.7;
+    filter:alpha(opacity=70);
+    background: var(--popBackground);
+
+}
+.TGC_Widget{
+    background: var(--widgetBackground);
+
+}
+
+.TGC_PanelBlack{
+    background: var(--colorBackgroundBlack);
+
+}
+.TGC_PanelYellow{
+    background: var(--colorBackgroundYellow);
+
+}
+.TGC_PanelRed{
+    background: var(--colorBackgroundRed);
+
+}
+.TGC_PanelGreen{
+    background: var(--colorBackgroundGreen);
+
+}
+.TGC_PanelBlue{
+    background: var(--colorBackgroundBlue);
+
+}
+.TGC_PanelGray{
+    background: var(--colorBackgroundGray);
+
+}
+.TGC_PanelPurple{
+    background: var(--colorBackgroundPurple);
+
+}
+.TGC_PanelOrange{
+    background: var(--colorBackgroundOrange);
+
+}
+
+.TGC_Border{
+    border: 1px solid var(--widgetBorder);
+
+}
+
+.TGC_LibBootModuleFile_pHtml{
+    background: var(--colorBackgroundGrayLight);
+
+}
+.TGC_LibBootModuleFile_tfLink{
+    width: 100%;
+
+}
+.TGC_LibBootModuleFile_btn{
+    width: 65px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid var(--widgetBorder);
+    height: 30px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    background-color: var(--widgetBackground);
+
+}
+
+
+.TGC_MenuBar_MenuMain{
+    color: var(--colorTextPrimary);
+    border-radius: 10px;
+    border: 1px solid var(--widgetBorder);
+
+}
+.TGC_MenuBar_MenuSub{
+    color: var(--colorTextPrimary);
+
+}
+.TGC_MenuBar_MenuItem{
+    color: var(--colorTextPrimary);
+    border-radius: 10px;
+    border: 1px solid var(--widgetBorder);
+
+}
+
+.TGC_WidgetPanelTab{
+    background: var(--widgetBackground);
+
+}
+
+.TGC_ThemeUtils_Label{
+    width: 20px;
+    border: 1px solid var(--widgetBorder);
+    border-radius: 10px 0px 0px 10px;
+    border-right: 0px;
+    margin-right: -6px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    height: 30px;
+    background-color: var(--widgetBackground);
+
+}
+.TGC_ThemeUtils_ListBox{
+    width: 105px;
+    height: 30px;
+    border: 1px solid var(--widgetBorder);
+    border-radius: 0px 10px 10px 0px;
+    border-left: 0px;
+
+}
+.TGC_ThemeUtils_PushButton{
+    border: 1px solid var(--widgetBorder);
+    height: 30px;
+    width: 50px;
+
+    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.TGC_MenuMobile{
+    border: 1px solid var(--widgetBorder);
+    height: 30px;
+
+    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.TGC_LibBootGUILogo {
+    font-family: fontLogo, "courier new", courier;
+    color: var(--logoColorText);
+    background: var(--colorBackground);
+
+    font-size: 80%;
+
+    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: -1;
+
+    border: 1px solid var(--widgetBorder);
+    border-radius: 10px;
+
+    cursor: pointer;
+
+}
+
+.TGC_Transperant {
+    opacity: 0.0;
+
+}
+
+.windowOperatorButton{
+    font-size: 1em;
+    overflow: hidden;
+    filter: grayscale(100%);
+    width: 80px;
+    cursor: pointer;
+
+    border: 1px solid var(--widgetBorder);
+    height: 30px;
+
+    text-align: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 10px;
+
+    background-color: var(--widgetBackground);
+
+}
+
+
+.TGC_LibBootGUIBody_bottom{
+    width: 100%;
+
+}
+
+.TGC_LibBootGUIBody_title{
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 3px;
+    font-size: 1.2em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: calc(100vw - 436px);
+}
+@supports (display: grid) {
+    .TGC_LibBootGUIBody_title {
+        /*width: calc(min(100vw,1000px) - 436px);*/
+    }
+}
+
+
+.TGC_LibBootGUIBody_top{
+    border: none;
+    margin:0 auto;
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 98%;
+}
+@supports (display: grid) {
+    .TGC_LibBootGUIBody_top {
+        /*width: min(98%, 1000px);*/
+    }
+}
+
+
+.TGC_LibBootGUIBody_top > tbody{
+    border: none;
+
+}
+
+.TGC_LibBootGUIBody_top > tbody > tr{
+    border: none;
+
+}
+
+.TGC_LibBootGUIBody_top > tbody > tr > td {
+    border: none;
+
+}
+
+.TGC_LibBootGUIBody_top > tbody > tr > td > table{
+    border: none;
+
+}
+
+.TGC_LibBootGUIBody_top > tbody > tr > td > table > tbody{
+    border: none;
+
+}
+
+.TGC_LibBootGUIBody_top > tbody > tr > td > table > tbody > tr{
+    border: none;
+
+}
+
+.TGC_LibBootGUIBody_top > tbody > tr > td > table > tbody > tr > td{
+    border: none;
+
+}
+
+.TGC_Card_input {
+    padding: 6px 5px 5px 35px;
+    border-radius: 17px;
+    font-size: 1.3em;
+    width: 100%;
+    background-repeat: no-repeat;
+
+}
+
+.TGC_Card_cards {
+    margin: 0 auto;
+    display: block;
+    padding-top: 10px;
+    width: 98%;
+}
+@supports (display: grid) {
+    .TGC_Card_cards {
+        /*width: min(98%, 1000px);*/
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+        grid-auto-rows: auto;
+        gap: 20px;
+    }
+}
+.TGC_Card_card_a {
+    padding-left: 2px;
+    padding-right: 2px;
+    border-radius: 200px 200px 30px 30px;
+    background: var(--panelBackground);
+    border: 4px solid var(--panelBackground);
+    cursor: pointer;
+    min-width: 242px;
+    max-width: 400px;
+    margin: 3px;
+    display: inline-block;
+}
+@supports (display: grid) {
+    .TGC_Card_card_a {
+        max-width: inherit;
+        margin: inherit;
+        display: inherit;
+    }
+}
+.TGC_Card_card_span {
+    padding-left: 2px;
+    padding-right: 2px;
+    border-radius: 30px 30px 100px 100px;
+    background: var(--popBackground);
+    border: 4px solid var(--popBackground);
+    color: var(--colorTextSecondary);
+    min-width: 242px;
+    max-width: 400px;
+    margin: 3px;
+    display: inline-block;
+}
+@supports (display: grid) {
+    .TGC_Card_card_span {
+        max-width: inherit;
+        margin: inherit;
+        display: inherit;
+    }
+}
+
+.TGC_Card_card_span_nocolor {
+    padding-left: 2px;
+    padding-right: 2px;
+    border-radius: 30px 30px 100px 100px;
+    color: var(--colorTextSecondary);
+}
+
+.TGC_Card_card_image {
+    height: 100px;/*max-height: 100px;*/
+    box-sizing: border-box;
+    width: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 30px 30px 30px 30px;
+    box-shadow: rgb(0 0 0 / 45%) 0px 25px 20px -20px;
+}
+
+.TGC_Card_card_content {
+    line-height: 1.5;
+    box-sizing: border-box;
+    padding: 5px;
+
+}
+
+.TGC_LibBootGUIDebug {
+    width: calc(100vw - 14px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+.TGC_LibBootGUIDebug:hover {
+    overflow: visible;
+    white-space: normal;
+
+}
+
+.TGC_ThemeUtils_HTML{
+    color: var(--colorTextPrimary);
+    height: 30px;
+    padding-top: 8px;
+    border: 1px solid var(--widgetBorder);
+    border-radius: 10px 0px 0px 10px;
+    border-right: 0px;
+    background-color: var(--widgetBackground);
+
+}
+
+.scroll{
+    overflow-x: auto;
+    overflow-y: auto;
+
+}
+.scrollHorizontal{
+    overflow-x: auto;
+    overflow-y: hidden;
+
+}
+.scrollVertical{
+    overflow-x: hidden;
+    overflow-y: auto;
+
+}
+
+
+.AppModule_configLayout{
+    margin:0 auto;
+    width: 98%;
+}
+@supports (display: grid) {
+    .AppModule_configLayout {
+        /*width: min(98%, 1000px);*/
+    }
+}
+
+.AppModule_configLayout2{
+}
+
+.AppModule_Grid_NoBorder_FixedHeight{
+    border: none;
+
+}
+.AppModule_Grid_NoBorder_FixedHeight > table{
+    border: none;
+
+}
+.AppModule_Grid_NoBorder_FixedHeight > table > tbody {
+    border: none;
+
+}
+.AppModule_Grid_NoBorder_FixedHeight > table > tbody > tr {
+    border: none;
+
+}
+.AppModule_Grid_NoBorder_FixedHeight > table > tbody > tr > td{
+    border: none;
+    height: 30px;
+
+}
+
+.AppModule_Grid_Label{
+    width: 100%;
+    height: 30px;
+    border-radius: 10px;
+    text-align: right;
+    line-height: 2.2;
+
+}
+.AppModule_Grid_TextBox{
+    width: 100%;
+    height: 30px;
+    border-radius: 10px;
+    margin-left: 3px;
+
+}
+.AppModule_Grid_Button{
+    width: 100%;
+    height: 30px;
+    border-radius: 10px;
+    line-height: 1.8;
+    margin-left: 5px;
+
+}
+.AppModule_Image_BorderRadiusSmall{
+    border-radius: 10px;
+
+}
+
+.AppModuleTable_input{
+    width: calc(100vw - 137px);
+}
+@supports (display: grid) {
+    .AppModuleTable_input {
+        /*width: calc(min(100vw,1000px) - 137px);*/
+    }
+}
+.AppModuleTable_input2{
+    width: calc(100vw - 274px);
+}
+@supports (display: grid) {
+    .AppModuleTable_input2 {
+        /*width: calc(min(100vw,1000px) - 274px);*/
+    }
+}
+.AppModuleWelcome_input{
+    width: calc(100vw - 137px);
+}
+@supports (display: grid) {
+    .AppModuleWelcome_input {
+        /*width: calc(min(100vw,1000px) - 137px);*/
+    }
+}
+.AppModuleColor_input{
+    width: calc(100vw - 137px);
+}
+@supports (display: grid) {
+    .AppModuleColor_input {
+        /*width: calc(min(100vw,1000px) - 137px);*/
+    }
+}
+
+
+.AppModuleTable_lbl{
+    background-color: var(--widgetBackground);
+    width: 80px;
+    height: 30px;
+    text-align: right;
+    line-height: 2.2;
+    white-space: nowrap;
+
+    padding-left: 5px;
+    padding-right: 5px;
+
+    border: 1px solid var(--widgetBorder);
+    border-radius: 10px 0px 0px 10px;
+    border-right: 0px;
+    margin-right: -2px;
+
+}
+.AppModuleColor_lbl{
+    background-color: var(--widgetBackground);
+    width: 80px;
+    height: 30px;
+    text-align: right;
+    line-height: 2.2;
+    white-space: nowrap;
+
+    padding-left: 5px;
+    padding-right: 5px;
+
+    border: 1px solid var(--widgetBorder);
+    border-radius: 10px 0px 0px 10px;
+    border-right: 0px;
+    margin-right: -2px;
+
+}
+
+
+.AppModuleTable_btn2{
+    width: 120px;
+    height: 30px;
+    border: 1px solid var(--widgetBorder);
+    border-radius: 10px;
+    background: var(--widgetBackground);
+    padding-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.AppModuleTable_tbInt{
+    width: 45px;
+    height: 30px;
+    line-height: 1.8;
+
+    border: 1px solid var(--widgetBorder);
+    border-radius: 0px 10px 10px 0px;
+    border-left: 0px;
+
+}
+.AppModuleColor_tbInt{
+    width: 45px;
+    height: 30px;
+    line-height: 1.8;
+
+    border: 1px solid var(--widgetBorder);
+    border-radius: 0px 10px 10px 0px;
+    border-left: 0px;
+
+}
+.AppModuleTable_btn{
+    width: 100px;
+    height: 30px;
+    line-height: 1.8;
+
+}
+.AppModuleWelcome_btn{
+    width: 120px;
+    height: 30px;
+    border: 1px solid var(--widgetBorder);
+    border-radius: 10px;
+    background: var(--widgetBackground);
+    padding-right: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.AppModuleTable_btnSmall{
+    width: 50px;
+    height: 30px;
+    line-height: 1.8;
+
+}
+
+.TGS_ScrollUtils_btn{
+    line-height: 1.8;
+    background: var(--panelBackground);
+    border: 1px solid var(--widgetBorder);
+    opacity: 25%;
+    z-index: 9999;
+
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    width: 75px;
+    height: 30px;
+    color: var(--colorTextPrimary);
+
+}
+.TGS_ScrollUtils_btn:hover{
+    opacity: 100%;
+}
+
+.TGC_ScrollUtils_btn{
+    line-height: 1.8;
+    background: var(--panelBackground);
+    border: 1px solid var(--widgetBorder);
+    opacity: 25%;
+    z-index: 9999;
+    color: var(--colorTextPrimary);
+
+}
+.TGC_ScrollUtils_btn:hover{
+    opacity: 100%;
+}
+
+
+
+.backgroundCenterRepeat {
+    background-position: center;
+    background-repeat: repeat;
+
+}
+.backgroundCenterCenterNoRepeatRepeat {
+    background-position: center, center;
+    background-repeat: no-repeat, repeat;
+
+}
+
+
+
+
+.AppModulePalette_page_btn{
+    width: 120px;
+    height: 30px;
+    line-height: 1.8;
+
+}
+.AppModulePalette_page_lbl{
+    width: 120px;
+    height: 30px;
+    line-height: 2.2;
+    border: 1px solid var(--widgetBorder);
+    border-radius: 10px 10px 10px 10px;
+
+    text-align: center;
+    margin-left: 2px;
+    margin-right: 2px;
+
+}
+.AppModulePalette_lblSearch{
+    line-height: 2.0;
+
+}
+.AppModulePalette_cbPalettes{
+    white-space: nowrap;
+    line-height: 2.0;
+
+}
+.AppModulePalette_btnSearch{
+
+}
+.AppModulePalette_tfCodeSearch{
+    border-radius: 10px;
+
+}
+.AppModulePalette_tfRGBSearch{
+    border-radius: 10px;
+    text-align: center;
+
+}
+.AppModulePalette_tbl_lblP{
+    background-color: gray;
+    color: white;
+    line-height: 1.8;
+
+}
+.AppModulePalette_tbl_lblC{
+    background-color: gray;
+    color: white;
+    line-height: 1.8;
+
+}
+.AppModulePalette_tbl_lblR{
+    text-align: center;
+    color: white;
+    background-color: red;
+    line-height: 1.8;
+
+}
+.AppModulePalette_tbl_lblG{
+    text-align: center;
+    color: white;
+    background-color: green;
+    line-height: 1.8;
+
+}
+.AppModulePalette_tbl_lblB{
+    text-align: center;
+    color: white;
+    background-color: blue;
+    line-height: 1.8;
+
+}
+.AppModulePalette_tbl_cellP{
+    background-color: lightgray;
+    color: black;
+    line-height: 1.8;
+    cursor: pointer;
+
+}
+.AppModulePalette_tbl_cellC{
+    background-color: lightgray;
+    color: black;
+    line-height: 1.8;
+    cursor: pointer;
+
+}
+.AppModulePalette_tbl_cellRGB{
+    background-color: lightgray;
+    color: black;
+    line-height: 1.8;
+    cursor: pointer;
+
+}
+
+
+.AppModuleNetwork_tbSearch{
+    height: 30px;
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
+
+}
+
+.AppModuleTitle{
+    display: table-cell;
+    position: relative;
+    padding-bottom: 5px;
+
+}
+.AppModuleTitle:after {
+    background: none repeat scroll 0 0 transparent;
+    bottom: 0;
+    content: "";
+    display: block;
+    height: 2px;
+    left: 50%;
+    position: absolute;
+    background: var(--colorTextPrimary);
+    transition: width 0.3s ease 0s, left 0.3s ease 0s;
+    width: 0;
+
+}
+.AppModuleTitle:hover:after {
+    width: 100%;
+    left: 0;
+
+}
+
+
+
+.styled-table {
+    border-collapse: collapse;
+    /*margin: 25px 0;*/
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 400px;
+    box-shadow: 0 0 20px var(--colorBackgroundGray);
+
+}
+.styled-table thead tr {
+    background-color: var(--panelBackground);
+    text-align: left;
+
+}
+.styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+
+}
+.styled-table tbody tr {
+    border-bottom: 1px solid var(--widgetBorder);
+
+}
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: var(--widgetOption);
+
+}
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px var(--widgetBorder);
+
+}
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: var(--colorBackgroundGreen);
+
+}
+
+.formButton{
+    cursor: pointer;
+    text-align: center;
+    background: var(--widgetBackground);
+    width: 100%;
+    border-radius: 10px;
+}
+
+
+.theme_container{
+    width: 100%;
+    margin-right: 20px;
+    position: relative;
+}
+.theme_switch {
+    transform: scale(0.7);
+    line-height: 1.8;
+    opacity: 25%;
+    z-index: 9999;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    color: var(--colorTextPrimary);
+
+    width: 7.5rem;
+    height: 4rem;
+}
+.theme_switch:hover{
+    opacity: 100%;
+}
+
+.theme_switch input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    opacity: 0;
+}
+
+.theme_switch label {
+    cursor: pointer;
+}
+
+.theme_background {
+    z-index: 1;
+    position: absolute;
+    width: 7.5rem;
+    height: 4rem;
+    border-radius: 2.5rem;
+    border: 0.25rem var(--widgetBorder);
+    background: linear-gradient(to right, var(--widgetBorder) 0%,#202020 100%);
+    transition: all 0.3s;
+}
+
+.theme_switch input:checked ~ .fill {
+    background: #E9F8FD;
+}
+
+.theme_stars1,
+.theme_stars2 {
+    position: absolute;
+    height: 0.4rem;
+    width: 0.4rem;
+    background: #FFFFFF;
+    border-radius: 50%;
+    transition: 0.3s all ease;
+}
+
+.theme_stars1 {
+    top: 6px;
+    right: 23px;
+}
+
+.theme_stars2 {
+    top: 40px;
+    right: 48px;
+}
+
+.theme_stars1:after,
+.theme_stars1:before,
+.theme_stars2:after,
+.theme_stars2:before{
+    position: absolute;
+    content: "";
+    display: block;
+    height: 0.25rem;
+    width: 0.25rem;
+    background: #FFFFFF;
+    border-radius: 50%;
+    transition: 0.2s all ease;
+}
+
+.theme_stars1:after {
+    top: 8px;
+    right: 20px;
+}
+
+.theme_stars1:before {
+    top: 18px;
+    right: -12px;
+}
+
+.theme_stars2:after {
+    top: -8px;
+    right: -16px;
+}
+
+.theme_stars2:before {
+    top: 6px;
+    right: -26px;
+}
+
+.theme_sun-moon {
+    z-index: 2;
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    height: 3rem;
+    width: 3rem;
+    margin: 0.5rem;
+    background: #FFFDF2;
+    border-radius: 50%;
+    transition: all 0.5s ease;
+
+    /* Default to Moon */
+    border: 0.25rem solid #DEE2C6;
+}
+
+.theme_sun-moon .theme_dots {
+    position: absolute;
+    top: 3px;
+    left: 23px;
+    height: 1rem;
+    width: 1rem;
+    background: #EFEEDB;
+    border: 0.25rem solid #DEE2C6;
+    border-radius: 50%;
+    transition: 0.4s all ease;
+}
+
+.theme_sun-moon .theme_dots:after,
+.theme_sun-moon .theme_dots:before {
+    position: absolute;
+    content: "";
+    display: block;
+    height: 0.25rem;
+    width: 0.25rem;
+    background: #EFEEDB;
+    border: 0.25rem solid #DEE2C6;
+    border-radius: 50%;
+    transition: 0.4s all ease;
+}
+
+.theme_sun-moon .theme_dots:after {
+    top: -4px;
+    left: -26px;
+}
+
+.theme_sun-moon .theme_dots:before {
+    top: 18px;
+    left: -10px;
+}
+
+/* Transition to Sun */
+
+.theme_switch input:checked ~ .theme_sun-moon {
+    left: calc(100% - 4rem);
+    background: #F5EC59;
+    border-color: #E7C65C;
+    transform: rotate(-25deg);
+}
+
+.theme_switch input:checked ~ .theme_sun-moon .theme_dots,
+.theme_switch input:checked ~ .theme_sun-moon .theme_dots:after,
+.theme_switch input:checked ~ .theme_sun-moon .theme_dots:before {
+    background: #FFFFFF;
+    border-color: #FFFFFF;
+}
+
+.theme_switch input:checked ~ .theme_sun-moon .theme_dots {
+    height: 1.5rem;
+    width: 1.5rem;
+    top: 0px;
+    left: -20px;
+    transform: rotate(25deg);
+}
+
+.theme_switch input:checked ~ .theme_sun-moon .theme_dots:after {
+    height: 0.65rem;
+    width: 0.65rem;
+    top: 2px;
+    left: -12px;
+}
+
+.theme_switch input:checked ~ .theme_sun-moon .theme_dots:before {
+    height: 0.4rem;
+    width: 0.4rem;
+    top: 6px;
+    left: 14px;
+}
+
+.theme_switch input:checked ~ .theme_background .theme_stars1,
+.theme_switch input:checked ~ .theme_background .theme_stars2 {
+    opacity: 0;
+    transform: translateY(2rem);
+}
+
+.theme_switch input:checked ~ .theme_background {
+    border: 0.25rem solid #78C1D5;
+    background: linear-gradient(to right, #78C1D5 0%, #BBE7F5 100%);
+}
+
+
+.gwt-SuggestBox { 
+   color: var(--colorTextPrimary) !important;
+}
+
+.gwt-SuggestBoxPopup { 
+   border: thin 1px solid var(--widgetBorder); 
+   width: 200px;
+   cursor: pointer !important;
+   background: var(--popBackground) !important;
+   background-color: var(--popBackground) !important;
+}
+
+.gwt-SuggestBoxPopup.item { 
+   color: var(--colorTextPrimary) !important;
+}
+
+.gwt-SuggestBoxPopup .item-selected { 
+    background: var(--widgetBackground) !important;
+    background-color: var(--widgetBackground) !important;
+}
+
+.gwt-SuggestBoxPopup .suggestPopupTopLeft { 
+   border: thin 1px solid var(--widgetBorder); 
+}
+
+.gwt-SuggestBoxPopup .suggestPopupTopLeftInner { 
+   border: thin 1px solid var(--widgetBorder); 
+}
+
+.gwt-SuggestBoxPopup .suggestPopupTopCenter { 
+   border: thin 1px solid var(--widgetBorder); 
+}
+
+.gwt-SuggestBoxPopup .suggestPopupTopCenterInner { 
+   border: thin 1px solid var(--widgetBorder); 
+}
+
+.gwt-SuggestBoxPopup .suggestPopupTopRight {
+   border: thin 1px solid var(--widgetBorder); 
+}
+
+.gwt-SuggestBoxPopup .suggestPopupTopRightInner {
+   border: thin 1px solid var(--widgetBorder); 
+}
+
+.gwt-SuggestBoxPopup .suggestPopupMiddleLeft { 
+   border: thin 1px solid var(--widgetBorder);
+}
+
+.gwt-SuggestBoxPopup .suggestPopupMiddleLeftInner { 
+   border: thin 1px solid var(--widgetBorder);
+}
+
+.gwt-SuggestBoxPopup .suggestPopupMiddleCenter { 
+    border: thin 1px solid var(--widgetBorder); width:200px;
+}
+
+.gwt-SuggestBoxPopup .suggestPopupMiddleCenterInner { 
+   border: thin 1px solid var(--widgetBorder);
+}
+
+.gwt-SuggestBoxPopup .suggestPopupMiddleRight { 
+   border: thin 1px solid var(--widgetBorder);
+}
+
+.gwt-SuggestBoxPopup .suggestPopupMiddleRightInner { 
+   border: thin 1px solid var(--widgetBorder);
+}
+
+.gwt-SuggestBoxPopup .suggestPopupBottomLeft {
+   border: thin 1px solid var(--widgetBorder);
+}
+
+.gwt-SuggestBoxPopup .suggestPopupBottomLeftInner { 
+   border: thin 1px solid var(--widgetBorder);
+}
+
+.gwt-SuggestBoxPopup .suggestPopupBottomCenter {
+   border: thin 1px solid var(--widgetBorder);
+ }
+
+.gwt-SuggestBoxPopup .suggestPopupBottomCenterInner { 
+   border: thin 1px solid var(--widgetBorder);
+}
+
+.gwt-SuggestBoxPopup .suggestPopupBottomRight { 
+   border: thin 1px solid var(--widgetBorder);
+}
+
+.gwt-SuggestBoxPopup .suggestPopupBottomRightInner { 
+   border: thin 1px solid var(--widgetBorder);
+}
+</style></head><body><div id="TGC_Card_cards" class="TGC_Card_cards">
+	
+	<a href="http://mesametal.com" target="_blank" tabindex="0" class="TGC_Card_card_a"><input type="text" tabindex="-1" aria-hidden="true" style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><div><div class="gwt-HTML TGC_Card_card_image" style="background-image:  url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjmNkz6z8ABkACv4QuSgAAAAAASUVORK5CYII=&quot;);"></div><div class="gwt-HTML TGC_Card_card_content">Mesa Metal Web Sayfası</div></div></a>
+	
+	<a href="http://mebosa.com" target="_blank" tabindex="0" class="TGC_Card_card_a"><input type="text" tabindex="-1" aria-hidden="true" style="opacity: 0; height: 1px; width: 1px; z-index: -1; overflow: hidden; position: absolute;"><div><div class="gwt-HTML TGC_Card_card_image" style="background-image:  url(&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAA1JREFUGFdjmNkz6z8ABkACv4QuSgAAAAAASUVORK5CYII=&quot;);"></div><div class="gwt-HTML TGC_Card_card_content">Mebosa Sayfası</div></div></a>
+	
+<div></body></html>

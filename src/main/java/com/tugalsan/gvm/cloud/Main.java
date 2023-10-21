@@ -126,7 +126,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 return null;
             }
             var nameType = TS_FileUtils.getNameType(pathExecutor);
-            d_caller.ci("nativeCaller", "nameType",nameType);
+            d_caller.ci("nativeCaller", "nameType", nameType);
             if (nameType.equals("htm")) {
                 return TGS_Tuple2.of(TGS_FileTypes.htm_utf8, TS_FileTxtUtils.toString(pathExecutor));
             }
@@ -189,8 +189,9 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 .coronate();
         d_caller.ci("nativeCaller_pick", "fileNameLabel", fileNameLabel);
         var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
+            var prj = TS_PathUtils.getPathCurrent_nio().getParent().resolve(fileNameLabel);
             if (!isWindows) {
-                var sh = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".sh");
+                var sh = prj.resolve(fileNameLabel + ".sh");
                 if (TS_FileUtils.isExistFile(sh)) {
                     d.ci("nativeCaller_pick", "picked", sh);
                     return sh;
@@ -199,28 +200,28 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 return null;
             }
             if (isWindows) {
-                var bat = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".bat");
+                var bat = prj.resolve(fileNameLabel + ".bat");
                 if (TS_FileUtils.isExistFile(bat)) {
                     d.ci("nativeCaller_pick", "picked", bat);
                     return bat;
                 }
-                var exe = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".exe");
+                var exe = prj.resolve(fileNameLabel + ".exe");
                 if (TS_FileUtils.isExistFile(exe)) {
                     d.ci("nativeCaller_pick", "picked", exe);
                     return exe;
                 }
             }
-            var jar = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".jar");
+            var jar = prj.resolve(fileNameLabel + ".jar");
             if (TS_FileUtils.isExistFile(jar)) {
                 d.ci("nativeCaller_pick", "picked", jar);
                 return jar;
             }
-            var htm = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".htm");
+            var htm = prj.resolve(fileNameLabel + ".htm");
             if (TS_FileUtils.isExistFile(htm)) {
                 d.ci("nativeCaller_pick", "picked", htm);
                 return htm;
             }
-            var txt = TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".txt");
+            var txt = prj.resolve(fileNameLabel + ".txt");
             if (TS_FileUtils.isExistFile(txt)) {
                 d.ci("nativeCaller_pick", "picked", txt);
                 return txt;
