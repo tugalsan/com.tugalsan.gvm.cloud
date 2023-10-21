@@ -189,7 +189,9 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 .coronate();
         d_caller.ci("nativeCaller_pick", "fileNameLabel", fileNameLabel);
         var filePath = TGS_Coronator.of(Path.class).coronateAs(val -> {
-            var prj = TS_PathUtils.getPathCurrent_nio().getParent().resolve(fileNameLabel);
+            var prj = Objects.equals("home", fileNameLabel)
+                    ? TS_PathUtils.getPathCurrent_nio()
+                    : TS_PathUtils.getPathCurrent_nio().getParent().resolve(fileNameLabel);
             if (!isWindows) {
                 var sh = prj.resolve(fileNameLabel + ".sh");
                 if (TS_FileUtils.isExistFile(sh)) {
