@@ -228,7 +228,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 d.ci("nativeCaller_pick", "picked", txt);
                 return txt;
             }
-            request.sendError404("ERROR: bat or exe file not found", TS_PathUtils.getPathCurrent_nio(fileNameLabel + ".xxx").toString());
+            request.sendError404("ERROR: file not found", prj.resolve(fileNameLabel + ".xxx").toString());
             return null;
         });
         return filePath;
