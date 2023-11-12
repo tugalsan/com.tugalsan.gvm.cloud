@@ -8,3 +8,10 @@ wf.msc (microsoft ortak konsol belgesi) -> Gelen Kuralları -> Yeni Kural:
   - Ad: 7443 TCP OPEN
 
 netstat -an | find "7443"
+
+
+
+TODO:
+Sorun: Güvenli dinamik Etki Alanı Adı Sistemi (DNS) güncelleştirmesi yapılandırılmış ve DHCP sunucusu ile aynı ana bilgisayar üzerinde bir etki alanı denetleyicisi çalışıyor, ancak DNS güncelleştirmesi için kimlik bilgileri yapılandırılmamış.
+Etki: DNS güncelleştirmesi için kimlik bilgileri yapılandırılmazsa DNS kayıtları başarısız olabilir.
+Çözümleme: DHCP MMC ek bileşenini kullanarak dinamik DNS güncelleştirmesi için kimlik bilgilerini yapılandırın.

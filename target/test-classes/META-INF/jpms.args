@@ -1,5 +1,3 @@
---add-modules
-jdk.incubator.vector
 --patch-module
 com.tugalsan.gvm.cloud=_
 --add-reads
