@@ -13,7 +13,7 @@ public class Settings {
     final private static TS_Log d = TS_Log.of(false, Settings.class);
 
     public static Path pathDefault() {
-        return TS_PathUtils.getPathCurrent_nio(Settings.class.getPackageName()+ ".properties");
+        return TS_PathUtils.getPathCurrent_nio(Settings.class.getPackageName() + ".properties");
     }
 
     private Settings(Path propsFile) {
@@ -66,6 +66,11 @@ public class Settings {
 
     public static Settings of(Path propsFile) {
         return new Settings(propsFile);
+    }
+
+    @Override
+    public String toString() {
+        return d.className + "{" + "redirectToSSL=" + redirectToSSL + ", onHandlerString_removeHiddenChars=" + onHandlerString_removeHiddenChars + ", onHandlerFile_filterUrlsWithHiddenChars=" + onHandlerFile_filterUrlsWithHiddenChars + ", sslPort=" + sslPort + ", sslPath=" + sslPath + ", fileHandlerRoot=" + fileHandlerRoot + ", ip=" + ip + ", sslPass=" + sslPass + ", fileHandlerServletName=" + fileHandlerServletName + '}';
     }
 
 }

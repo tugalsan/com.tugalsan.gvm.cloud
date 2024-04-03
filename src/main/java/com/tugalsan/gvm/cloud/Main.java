@@ -1,7 +1,7 @@
 package com.tugalsan.gvm.cloud;
 
 import com.tugalsan.api.coronator.client.TGS_Coronator;
-import com.tugalsan.api.file.client.*;
+import com.tugalsan.api.file.   client.*;
 import com.tugalsan.api.file.server.TS_FileUtils;
 import com.tugalsan.api.file.server.TS_PathUtils;
 import com.tugalsan.api.file.txt.server.TS_FileTxtUtils;
@@ -45,6 +45,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             d.ce("main", "ERROR: settings == null");
             return;
         }
+        d.cr("main", settings);
 
         //LICENSE
         if (!TS_LibLicenseFileUtils.checkLicenseFromLicenseFile(Main.class)) {
@@ -68,14 +69,14 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     }
 
     private static void startRowInfo(TS_ThreadSyncTrigger kill, Duration durInfo) {
-        TS_ThreadAsyncScheduled.every(kill, true, durInfo, kt -> {
+        TS_ThreadAsyncScheduled.every(kill, null, true, durInfo, kt -> {
             d_thread.ci("startRowInfo", "rows.size()", rows.size());
             rows.forEach(row -> d_thread.ci("startRowInfo", row));
         });
     }
 
     private static void startRowCleanUp(TS_ThreadSyncTrigger kill) {
-        TS_ThreadAsyncScheduled.every(kill, true, maxExecutionDuration, kt -> {
+        TS_ThreadAsyncScheduled.every(kill, null, true, maxExecutionDuration, kt -> {
             var ago = TGS_Time.ofMinutesAgo((int) maxExecutionDuration.toMinutes());
             d_thread.ci("startRowCleanUp", "will clean before", ago.toString_dateOnly(), ago.toString_timeOnly_simplified());
             d_thread.ci("startRowCleanUp", "before", "rows.size()", rows.size());
@@ -158,7 +159,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
             return TGS_Tuple2.of(type, outExecution);
         }, settings.onHandlerString_removeHiddenChars);
     }
-    final static private TS_ThreadSyncLst<Row> rows = new TS_ThreadSyncLst();
+    final static private TS_ThreadSyncLst<Row> rows = TS_ThreadSyncLst.of();
 
     private static String nativeCaller_call(TS_ThreadSyncTrigger kill, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
         var await = TS_ThreadAsyncAwait.callSingle(kill, maxExecutionDuration, kt -> {
