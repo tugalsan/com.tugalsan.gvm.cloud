@@ -106,7 +106,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
                 return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: pRowHash == null @ " + request.url);
             }
             d_caller.ci("nativeSupplier", "pRowHash", pRowHash);
-            var row = rows.findFirst(r -> Objects.equals(r.hash, pRowHash.valueUrlSafe));
+            var row = rows.findFirst(r -> Objects.equals(r.hash, pRowHash.valueSafe));
             if (row == null) {
                 return TGS_Tuple2.of(TGS_FileTypes.txt_utf8, "ERROR: row == null @ " + request.url);
             }
