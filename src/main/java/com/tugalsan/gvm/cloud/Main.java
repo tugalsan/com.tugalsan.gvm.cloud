@@ -13,8 +13,8 @@ import com.tugalsan.api.random.client.TGS_RandomUtils;
 import com.tugalsan.api.servlet.http.server.*;
 import com.tugalsan.api.string.client.*;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncTrigger;
-import com.tugalsan.api.thread.server.async.TS_ThreadAsyncAwait;
-import com.tugalsan.api.thread.server.async.TS_ThreadAsyncScheduled;
+import com.tugalsan.api.thread.server.async.await.TS_ThreadAsyncAwait;
+import com.tugalsan.api.thread.server.async.scheduled.TS_ThreadAsyncScheduled;
 import com.tugalsan.api.thread.server.sync.TS_ThreadSyncLst;
 import com.tugalsan.api.time.client.TGS_Time;
 import com.tugalsan.api.tuple.client.*;
@@ -39,7 +39,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     public static void main(String[] args) {
         //PREREQUESTS
         TS_NetworkSSLUtils.disableCertificateValidation();
-        var kill = TS_ThreadSyncTrigger.of();
+        var kill = TS_ThreadSyncTrigger.of("main");
         var settings = Settings.of(Settings.pathDefault());
         if (settings == null) {
             d.ce("main", "ERROR: settings == null");
@@ -69,14 +69,14 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     }
 
     private static void startRowInfo(TS_ThreadSyncTrigger kill, Duration durInfo) {
-        TS_ThreadAsyncScheduled.every(kill, null, true, durInfo, kt -> {
+        TS_ThreadAsyncScheduled.every(kill.newChild("startRowInfo"), null, true, durInfo, kt -> {
             d_thread.ci("startRowInfo", "rows.size()", rows.size());
-            rows.forEach(row -> d_thread.ci("startRowInfo", row));
+            rows.forEach(false, row -> d_thread.ci("startRowInfo", row));
         });
     }
 
     private static void startRowCleanUp(TS_ThreadSyncTrigger kill) {
-        TS_ThreadAsyncScheduled.every(kill, null, true, maxExecutionDuration, kt -> {
+        TS_ThreadAsyncScheduled.every(kill.newChild("startRowCleanUp"), null, true, maxExecutionDuration, kt -> {
             var ago = TGS_Time.ofMinutesAgo((int) maxExecutionDuration.toMinutes());
             d_thread.ci("startRowCleanUp", "will clean before", ago.toString_dateOnly(), ago.toString_timeOnly_simplified());
             d_thread.ci("startRowCleanUp", "before", "rows.size()", rows.size());
