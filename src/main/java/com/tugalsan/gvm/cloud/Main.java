@@ -162,7 +162,7 @@ public class Main {//extended from com.tugalsan.tst.servlet.http.Main
     final static private TS_ThreadSyncLst<Row> rows = TS_ThreadSyncLst.of();
 
     private static String nativeCaller_call(TS_ThreadSyncTrigger kill, Duration maxExecutionDuration, TS_SHttpHandlerRequest request, Path pathExecutor, String rowHash) {
-        var await = TS_ThreadAsyncAwait.callSingle(kill, maxExecutionDuration, kt -> {
+        var await = TS_ThreadAsyncAwait.callSingle(kill.newChild("nativeCaller_call"), maxExecutionDuration, kt -> {
             var cmdList = pathExecutor.toString().endsWith("jar")
                     ? List.of("java", "--enable-preview", "--add-modules", "jdk.incubator.vector", "-jar", pathExecutor.toString(), rowHash)
                     : List.of(pathExecutor.toString(), rowHash);
